@@ -13,10 +13,10 @@ class UI_Ceil(QtWidgets.QCheckBox):
         self.update_text()
         self.update_geometry()
         self.setStyleSheet(
-            "background-color: rgb(232, 232, 232);\n"
             "border: 1px solid black;\n"
             "border-color: rgb(0, 0, 0);"
         )
+        self.update_color()
 
     def update_text(self):
         h, l = round(self.geometry_[3]), round(self.geometry_[2])
@@ -25,6 +25,15 @@ class UI_Ceil(QtWidgets.QCheckBox):
     def update_geometry(self):
         self.setGeometry(QtCore.QRect(*map(lambda a: round(a * self.k), self.geometry_)))
 
+    def update_color(self):
+        style = self.styleSheet()
+        if self.material == 'Стекло':
+            self.setStyleSheet(f"{style}\nbackground-color: rgb(232, 232, 232);")
+        elif self.material == 'Зеркало':
+            self.setStyleSheet(f"{style}\nbackground-color: rgb(102, 205, 170);")
+        else:
+            self.setStyleSheet(f"{style}\nbackground-color: rgb(255, 127,  80);")
+
 
 class Drawing(QtWidgets.QWidget):
     def update_scale(self, k):
@@ -32,7 +41,7 @@ class Drawing(QtWidgets.QWidget):
             ceil.k = k
             ceil.update_geometry()
 
-    def __init__(self, form, height, long, doors, divide, sizes, k):
+    def __init__(self, form, height, long, doors, divide, sizes, k, materials):
         super(Drawing, self).__init__()
         """height = 2500
         long = 3000
@@ -56,7 +65,7 @@ class Drawing(QtWidgets.QWidget):
                 for size in col:
                     x, y, x1, y1 = size
                     x1, y1, = x1 - x, y1 - y
-                    self.ceils.append(UI_Ceil(self, (x, y, x1, y1), k, 'Зеркало', i_door))
+                    self.ceils.append(UI_Ceil(self, (x, y, x1, y1), k, materials[i_door], i_door))
         QtCore.QMetaObject.connectSlotsByName(self)
 
     def merge(self):
@@ -78,4 +87,10 @@ class Drawing(QtWidgets.QWidget):
             up_left.update_text()
             up_left.update_geometry()
 
-
+    def change_materials(self, material):
+        for ceil in self.ceils:
+            if ceil.isChecked():
+                ceil.setChecked(False)
+                ceil.material = material
+                ceil.update_text()
+                ceil.update_color()

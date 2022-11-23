@@ -16,6 +16,7 @@ class Ui_NewOrder(object):
     k = 0.1
     sizes = [0, 0, 0, 0, 0, 0, 0]
     divide = [0, 0, 0, 0, 0, 0, 0]
+    materials = ['', '', '', '', '', '', '']
 
     @staticmethod
     def norm_value(value, default=1):
@@ -31,6 +32,9 @@ class Ui_NewOrder(object):
             self.k -= 0.05
         self.draw.update_scale(self.k)
 
+    def draw_material(self, material):
+        self.draw.change_materials(material)
+
     def normalize_all_value(self):
         self.doors = self.norm_value(self.inp_door.text())
         self.height = self.norm_value(self.inp_height.text())
@@ -39,7 +43,10 @@ class Ui_NewOrder(object):
         for i in range(self.doors):
             l, h = self.norm_value(eval(f"self.l{i+1}.text()")), self.norm_value(eval(f"self.h{i+1}.text()"))
             self.divide[i] = (h, l)
-            self.sizes[i] = [ [0 for _ in range(h)], [0 for _ in range(l)] ]
+            if self.sizes[i] == 0:
+                self.sizes[i] = [ [0 for _ in range(h)], [0 for _ in range(l)] ]
+            self.materials[i] = eval(f"self.mat{i+1}.currentText()")
+
 
     def show_set_size(self, n):
         from set_size_window import SetSizeDialog
@@ -53,7 +60,7 @@ class Ui_NewOrder(object):
         self.normalize_all_value()
         if self.draw != 0:
             self.verticalGroupBox.layout().removeWidget(self.draw)
-        self.draw = Drawing(self.centralwidget, self.height, self.long, self.doors, self.divide, self.sizes, self.k)
+        self.draw = Drawing(self.centralwidget, self.height, self.long, self.doors, self.divide, self.sizes, self.k, self.materials)
         self.verticalGroupBox.layout().addWidget(self.draw)
 
     def setupUi(self, NewOrder):
@@ -834,6 +841,9 @@ class Ui_NewOrder(object):
 
         self.btn_plus.clicked.connect(lambda: self.scale(0))
         self.btn_nimus.clicked.connect(lambda: self.scale(1))
+        self.btn_grass.clicked.connect(lambda: self.draw_material('Стекло'))
+        self.btn_mirror.clicked.connect(lambda: self.draw_material('Зеркало'))
+        self.btn_LDSP.clicked.connect(lambda: self.draw_material('ЛДСП'))
 
     def retranslateUi(self, NewOrder):
         _translate = QtCore.QCoreApplication.translate

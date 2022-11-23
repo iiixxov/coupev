@@ -68,7 +68,7 @@ class SetSizeDialog(QtWidgets.QDialog):
                         size = 0
                     else:
                         size = input_edit.text()
-                    self.size[i].append(size)
+                    self.size[i].append(int(size))
             print(self.size)
             self.accept()
 
