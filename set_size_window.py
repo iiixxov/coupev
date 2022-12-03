@@ -50,7 +50,7 @@ class SetSizeDialog(QtWidgets.QDialog):
         for i in range(long_div):
             input_edit = InputSize(self)
             if sizes[1][i] != 0:
-                input_edit.setText(str(sizes[0][i]))
+                input_edit.setText(str(sizes[1][i]))
             self.gridLayout.addWidget(input_edit, 0, i + 1, 1, 1)
             self.inputs[1].append(input_edit)
 
