@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>788</width>
+    <width>787</width>
     <height>686</height>
    </rect>
   </property>
@@ -14,7 +14,7 @@
    <string>Coupe</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,2">
+   <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,2">
     <item>
      <layout class="QVBoxLayout" name="config_zone">
       <item>
@@ -65,9 +65,9 @@
          <property name="geometry">
           <rect>
            <x>0</x>
-           <y>0</y>
-           <width>500</width>
-           <height>1244</height>
+           <y>-200</y>
+           <width>419</width>
+           <height>1198</height>
           </rect>
          </property>
          <layout class="QGridLayout" name="gridLayout" columnstretch="0,0">
@@ -77,9 +77,18 @@
              <number>0</number>
             </property>
             <item>
-             <widget class="QCheckBox" name="ch_needsealer">
+             <widget class="QLineEdit" name="int_door_w">
+              <property name="inputMethodHints">
+               <set>Qt::ImhNone</set>
+              </property>
+              <property name="inputMask">
+               <string/>
+              </property>
               <property name="text">
-               <string>Нужен уплотнитель?</string>
+               <string/>
+              </property>
+              <property name="clearButtonEnabled">
+               <bool>false</bool>
               </property>
              </widget>
             </item>
@@ -525,69 +534,6 @@
              <number>2</number>
             </property>
             <item>
-             <widget class="QGroupBox" name="groupBox_10">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="title">
-               <string/>
-              </property>
-              <layout class="QFormLayout" name="formLayout_6">
-               <property name="horizontalSpacing">
-                <number>0</number>
-               </property>
-               <property name="verticalSpacing">
-                <number>3</number>
-               </property>
-               <property name="leftMargin">
-                <number>0</number>
-               </property>
-               <property name="topMargin">
-                <number>0</number>
-               </property>
-               <property name="rightMargin">
-                <number>0</number>
-               </property>
-               <property name="bottomMargin">
-                <number>0</number>
-               </property>
-               <item row="0" column="0">
-                <widget class="QLabel" name="glass_w">
-                 <property name="text">
-                  <string>Ширина  стекла</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1">
-                <widget class="QLineEdit" name="inp_glass_w"/>
-               </item>
-               <item row="1" column="0">
-                <widget class="QLabel" name="mirror_w">
-                 <property name="text">
-                  <string>Ширина зеркала</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1">
-                <widget class="QLineEdit" name="inp_mirror_w"/>
-               </item>
-               <item row="2" column="0">
-                <widget class="QLabel" name="LDSP_w">
-                 <property name="text">
-                  <string>Ширина ЛДСП</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="1">
-                <widget class="QLineEdit" name="inp_LDSP_w"/>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
              <widget class="QGroupBox" name="groupBox_13">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
@@ -926,6 +872,47 @@
              </widget>
             </item>
             <item>
+             <widget class="QGroupBox" name="groupBox_9">
+              <property name="title">
+               <string/>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_16">
+               <property name="spacing">
+                <number>0</number>
+               </property>
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QRadioButton" name="r_no_dilivery">
+                 <property name="text">
+                  <string>Без доставки</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="radioButton_3r_dilivery">
+                 <property name="text">
+                  <string>С доставкой</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
              <widget class="QGroupBox" name="groupBox_7">
               <property name="title">
                <string/>
@@ -1149,31 +1136,31 @@
                <property name="bottomMargin">
                 <number>0</number>
                </property>
-               <item row="2" column="0" colspan="2">
+               <item row="3" column="0" colspan="2">
                 <widget class="QRadioButton" name="r_nostandart_overlap">
                  <property name="text">
                   <string>Нестандарт. перехлест</string>
                  </property>
                 </widget>
                </item>
-               <item row="4" column="0" colspan="2">
+               <item row="5" column="0" colspan="2">
                 <widget class="QRadioButton" name="r_no_overlap">
                  <property name="text">
                   <string>Без перехлест.</string>
                  </property>
                 </widget>
                </item>
-               <item row="5" column="0">
+               <item row="6" column="0">
                 <widget class="QLabel" name="inp_overlap_count">
                  <property name="text">
                   <string>Количетво</string>
                  </property>
                 </widget>
                </item>
-               <item row="5" column="1">
+               <item row="6" column="1">
                 <widget class="QSpinBox" name="spinBox"/>
                </item>
-               <item row="1" column="0">
+               <item row="2" column="0">
                 <widget class="QRadioButton" name="r_standart_overlap">
                  <property name="text">
                   <string>Стандарт.  перехлест</string>
@@ -1426,47 +1413,6 @@
               </layout>
              </widget>
             </item>
-            <item>
-             <widget class="QGroupBox" name="groupBox_9">
-              <property name="title">
-               <string/>
-              </property>
-              <layout class="QVBoxLayout" name="verticalLayout_16">
-               <property name="spacing">
-                <number>0</number>
-               </property>
-               <property name="leftMargin">
-                <number>0</number>
-               </property>
-               <property name="topMargin">
-                <number>0</number>
-               </property>
-               <property name="rightMargin">
-                <number>0</number>
-               </property>
-               <property name="bottomMargin">
-                <number>0</number>
-               </property>
-               <item>
-                <widget class="QRadioButton" name="r_no_dilivery">
-                 <property name="text">
-                  <string>Без доставки</string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QRadioButton" name="radioButton_3r_dilivery">
-                 <property name="text">
-                  <string>С доставкой</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
            </layout>
           </item>
          </layout>
@@ -1500,10 +1446,27 @@
          </sizepolicy>
         </property>
         <layout class="QGridLayout" name="gridLayout_2">
-         <item row="2" column="1">
-          <widget class="QPushButton" name="btn_nimus">
+         <item row="2" column="0">
+          <widget class="QPushButton" name="btn_plus">
            <property name="text">
-            <string>Масштаб -</string>
+            <string>Масштаб +</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0" colspan="2">
+          <widget class="QLineEdit" name="inp_mat"/>
+         </item>
+         <item row="0" column="0" colspan="2">
+          <widget class="QPushButton" name="btn_merge">
+           <property name="text">
+            <string>Объеденить</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="2">
+          <widget class="QPushButton" name="custom_mat">
+           <property name="text">
+            <string>Свой материал</string>
            </property>
           </widget>
          </item>
@@ -1514,10 +1477,10 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="2">
-          <widget class="QPushButton" name="btn_mirror">
+         <item row="2" column="1">
+          <widget class="QPushButton" name="btn_nimus">
            <property name="text">
-            <string>Зеркало</string>
+            <string>Масштаб -</string>
            </property>
           </widget>
          </item>
@@ -1528,10 +1491,10 @@
            </property>
           </widget>
          </item>
-         <item row="2" column="0">
-          <widget class="QPushButton" name="btn_plus">
+         <item row="1" column="2">
+          <widget class="QPushButton" name="btn_mirror">
            <property name="text">
-            <string>Масштаб +</string>
+            <string>Зеркало</string>
            </property>
           </widget>
          </item>
@@ -1539,13 +1502,6 @@
           <widget class="QPushButton" name="btn_unmerge">
            <property name="text">
             <string>Разъеденить</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0" colspan="2">
-          <widget class="QPushButton" name="btn_merge">
-           <property name="text">
-            <string>Объеденить</string>
            </property>
           </widget>
          </item>

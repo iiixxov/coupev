@@ -23,7 +23,7 @@ class InputSize(QtWidgets.QLineEdit):
 
 
 class SetSizeDialog(QtWidgets.QDialog):
-    def __init__(self, height_div, long_div):
+    def __init__(self, sizes, height_div, long_div):
         super(SetSizeDialog, self).__init__()
         self.setModal(True)
         self.setWindowTitle("Установить размеры")
@@ -43,10 +43,14 @@ class SetSizeDialog(QtWidgets.QDialog):
         self.inputs = [[], []]
         for i in range(height_div):
             input_edit = InputSize(self)
+            if sizes[0][i] != 0:
+                input_edit.setText(str(sizes[0][i]))
             self.gridLayout.addWidget(input_edit, i + 1, 0, 1, 1)
             self.inputs[0].append(input_edit)
         for i in range(long_div):
             input_edit = InputSize(self)
+            if sizes[1][i] != 0:
+                input_edit.setText(str(sizes[0][i]))
             self.gridLayout.addWidget(input_edit, 0, i + 1, 1, 1)
             self.inputs[1].append(input_edit)
 
@@ -54,10 +58,15 @@ class SetSizeDialog(QtWidgets.QDialog):
 
         self.buttonBox = QtWidgets.QDialogButtonBox(self)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
+        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName("buttonBox")
+        self.gridLayout.addWidget(self.buttonBox, 0, 0, 1, 1)
 
         #self.verticalLayout.addWidget(self.buttonBox)
+
+        def reject():
+            self.size = None
+            self.close()
 
         def accept():
             self.size = [[], []]
@@ -70,10 +79,10 @@ class SetSizeDialog(QtWidgets.QDialog):
                         size = input_edit.text()
                     self.size[i].append(int(size))
             print(self.size)
-            self.accept()
+            self.close()
 
         self.buttonBox.accepted.connect(accept)
-        self.buttonBox.rejected.connect(self.reject)
+        self.buttonBox.rejected.connect(reject)
 
         QtCore.QMetaObject.connectSlotsByName(self)
         self.show()
