@@ -9,6 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtSql import QSqlQuery
 from PyQt5.QtWidgets import QMessageBox
 
 
@@ -19,6 +20,16 @@ class Ui_NewOrder(object):
     divide = [0, 0, 0, 0, 0, 0, 0]
     materials = ['', '', '', '', '', '', '']
     doors_sizes = [0, 0, 0, 0, 0, 0, 0]
+
+    def connect_to_db(self):
+        from PyQt5.QtSql import QSqlDatabase
+        con = QSqlDatabase.addDatabase("QSQLITE")
+        con.setDatabaseName("contacts.sqlite")
+        con.open()
+
+        query = QSqlQuery("SELECT id, name FROM customers")
+        while query.next():
+            print(query.value(0), query.value(1))
 
     def add_connect(self):
         self.size_1.clicked.connect(lambda: self.show_set_size(0))
@@ -79,7 +90,7 @@ class Ui_NewOrder(object):
             self.materials[i] = eval(f"self.mat{i + 1}.currentText()")
 
     def show_set_size(self, n):
-        from set_size_window import SetSizeDialog
+        from new_order.set_size_window import SetSizeDialog
         self.normalize_all_value()
         h, l = self.divide[n]
         if h > 15 or l > 15:
@@ -95,7 +106,7 @@ class Ui_NewOrder(object):
                 self.sizes[n] = size
 
     def update(self):
-        from grawing import Drawing
+        from new_order.grawing import Drawing
         self.normalize_all_value()
         if self.draw != 0:
             self.verticalGroupBox.layout().removeWidget(self.draw)
@@ -104,6 +115,8 @@ class Ui_NewOrder(object):
         self.verticalGroupBox.layout().addWidget(self.draw)
 
     def setupUi(self, NewOrder):
+        self.connect_to_db()
+
         NewOrder.setObjectName("NewOrder")
         NewOrder.resize(1000, 800)
         self.centralwidget = QtWidgets.QWidget(NewOrder)
