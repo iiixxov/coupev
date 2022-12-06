@@ -1,15 +1,16 @@
 from PyQt5 import QtCore, QtWidgets
-from ceil import Ceil
+from new_order.ceil import Ceil
 
 
 class UI_Ceil(QtWidgets.QCheckBox):
-    def __init__(self, form, geometry, k, material, door_n):
+    def __init__(self, form, geometry, k, material, door_n, pos):
         super(UI_Ceil, self).__init__(form)
         self.geometry_ = geometry
         self.merged = list()
         self.door_n = door_n
         self.material = material
         self.k = k
+        self.pos = pos
         self.update_text()
         self.update_geometry()
         self.setStyleSheet(
@@ -21,7 +22,7 @@ class UI_Ceil(QtWidgets.QCheckBox):
     def update_text(self):
         h, l = round(self.geometry_[3]), round(self.geometry_[2])
         self.setText(f'{self.material}\n{h}x{l}')
-        self.setToolTip(f'{self.material}\n{h}x{l}')
+        self.setToolTip(f'{self.material}\n{h}x{l}\npos={self.pos}')
 
     def update_geometry(self):
         self.setGeometry(QtCore.QRect(*map(lambda a: round(a * self.k), self.geometry_)))
@@ -49,20 +50,11 @@ class Drawing(QtWidgets.QWidget):
             ceil.k = k
             ceil.update_geometry()
 
-    def __init__(self, form, height, long, doors, divide, sizes, k, materials, d_sizes):
+    def __init__(self, form, height, long, doors, divide, sizes, k, materials, d_sizes, pofile: tuple, uplotnitel, shlegel):
+        """
+        :param pofile: (перехлест, горизонт, Н ЛДСП, L ЛДСП)
+        """
         super(Drawing, self).__init__()
-        """height = 2500
-        long = 3000
-        doors = 2
-        divide = (
-            (3, 2),
-            (3, 2)
-        )
-        sizes = (
-            ((0, 300, 0), (0, 0)),
-            ((300, 0, 0), (0, 0))
-        )
-        k = 0.15"""
         d_sizes = Ceil.get_doors_sizes(long, doors, d_sizes)
         doors_sizes = Ceil.get_sizes(height, long, doors, divide, d_sizes)
         for i in range(doors):
@@ -70,11 +62,11 @@ class Drawing(QtWidgets.QWidget):
 
         self.ceils = []
         for i_door, door in enumerate(doors_sizes):
-            for col in door:
-                for size in col:
+            for i, col in enumerate(door):
+                for j, size in enumerate(col):
                     x, y, x1, y1 = size
                     x1, y1, = x1 - x, y1 - y
-                    self.ceils.append(UI_Ceil(self, (x, y, x1, y1), k, materials[i_door], i_door))
+                    self.ceils.append(UI_Ceil(self, (x, y, x1, y1), k, materials[i_door], i_door, (i, j)))
         QtCore.QMetaObject.connectSlotsByName(self)
 
     def merge(self):

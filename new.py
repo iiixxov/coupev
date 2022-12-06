@@ -15,11 +15,14 @@ from PyQt5.QtWidgets import QMessageBox
 
 class Ui_NewOrder(object):
     draw = 0
-    k = 0.1
+    k = 0.15
     sizes = [0, 0, 0, 0, 0, 0, 0]
     divide = [0, 0, 0, 0, 0, 0, 0]
     materials = ['', '', '', '', '', '', '']
     doors_sizes = [0, 0, 0, 0, 0, 0, 0]
+    profile = (26, 52, 59, 36)
+    uplotnitel = 4
+    shlegel = 5
 
     def connect_to_db(self):
         from PyQt5.QtSql import QSqlDatabase
@@ -111,11 +114,11 @@ class Ui_NewOrder(object):
         if self.draw != 0:
             self.verticalGroupBox.layout().removeWidget(self.draw)
         self.draw = Drawing(self.centralwidget, self.height, self.long, self.doors, self.divide, self.sizes, self.k,
-                            self.materials, self.doors_sizes)
+                            self.materials, self.doors_sizes, self.profile, self.uplotnitel, self.shlegel)
         self.verticalGroupBox.layout().addWidget(self.draw)
 
     def setupUi(self, NewOrder):
-        self.connect_to_db()
+        # self.connect_to_db()
 
         NewOrder.setObjectName("NewOrder")
         NewOrder.resize(1000, 800)

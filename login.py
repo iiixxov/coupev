@@ -10,22 +10,27 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtSql import QSqlQuery
+from orders import show_table
 
 
 class Ui_mainWindow(object):
-    def connect_to_db(self):
+    def connect(self, mainWindow):
         from PyQt5.QtSql import QSqlDatabase
+        name = self.comboBox.currentText()
+        password = self.lineEdit.text()
         con = QSqlDatabase.addDatabase("QSQLITE")
         con.setDatabaseName("contacts.sqlite")
         con.open()
 
-        query = QSqlQuery('SELECT * FROM users;')
-        while query.next():
-            print(query.value(0), query.value(1))
+        query = QSqlQuery(f"""SELECT password FROM users WHERE name = '{name}';""")
+        query.next()
+        if query.value(0) == password:
+            show_table(con)
+        else:
+            QtWidgets.QMessageBox.information(mainWindow, "Вход", "Неверный пароль.")
 
 
     def setupUi(self, mainWindow):
-        self.connect_to_db()
 
         mainWindow.setObjectName("mainWindow")
         mainWindow.resize(500, 200)
@@ -66,6 +71,7 @@ class Ui_mainWindow(object):
         self.gridLayout.addWidget(self.groupBox, 0, 1, 1, 1)
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton.setObjectName("pushButton")
+        self.pushButton.clicked.connect(lambda: self.connect(mainWindow))
         self.gridLayout.addWidget(self.pushButton, 1, 1, 1, 1)
         mainWindow.setCentralWidget(self.centralwidget)
 
