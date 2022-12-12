@@ -50,12 +50,12 @@ class Drawing(QtWidgets.QWidget):
             ceil.k = k
             ceil.update_geometry()
 
-    def __init__(self, form, height, long, doors, divide, sizes, k, materials, d_sizes, pofile: tuple, uplotnitel, shlegel):
+    def __init__(self, form, height, long, doors, divide, sizes, k, materials, d_sizes, profile: tuple, uplotnitel, shlegel):
         """
-        :param pofile: (перехлест, горизонт, Н ЛДСП, L ЛДСП)
+        :param profile: (перехлест, горизонт, Н ЛДСП, L ЛДСП)
         """
         super(Drawing, self).__init__()
-        d_sizes = Ceil.get_doors_sizes(long, doors, d_sizes)
+        d_sizes = Ceil.get_doors_sizes(long, doors, d_sizes, profile[0], doors-1)
         doors_sizes = Ceil.get_sizes(height, long, doors, divide, d_sizes)
         for i in range(doors):
             doors_sizes[i] = Ceil.change_sizes(doors_sizes[i], divide[i], sizes[i], height, d_sizes[i])

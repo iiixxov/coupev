@@ -1,8 +1,8 @@
 class Ceil:
     @staticmethod
-    def get_doors_sizes(L, n, sizes, perehselt, gorizont):
+    def get_doors_sizes(L, n, sizes, perehselt, n_perehlest):
         count = 0
-        L += perehselt
+        L += (perehselt * n_perehlest)
         for i in range(n):
             if sizes[i] != 0:
                 L -= sizes[i]

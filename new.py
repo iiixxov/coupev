@@ -16,13 +16,16 @@ from PyQt5.QtWidgets import QMessageBox
 class Ui_NewOrder(object):
     draw = 0
     k = 0.15
+
     sizes = [0, 0, 0, 0, 0, 0, 0]
     divide = [0, 0, 0, 0, 0, 0, 0]
     materials = ['', '', '', '', '', '', '']
     doors_sizes = [0, 0, 0, 0, 0, 0, 0]
     profile = (26, 52, 59, 36)
+
     uplotnitel = 4
     shlegel = 5
+    napravlaushaya = 40
 
     def connect_to_db(self):
         from PyQt5.QtSql import QSqlDatabase
@@ -77,7 +80,7 @@ class Ui_NewOrder(object):
 
     def normalize_all_value(self):
         self.doors = self.norm_value(self.inp_door.text())
-        self.height = self.norm_value(self.inp_height.text())
+        self.height = self.norm_value(self.inp_height.text()) - self.napravlaushaya
         self.long = self.norm_value(self.inp_long.text())
 
         for i, size in enumerate(self.int_door_w.text().split()):
