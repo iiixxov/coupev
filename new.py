@@ -14,7 +14,7 @@ from PyQt5.QtWidgets import QMessageBox
 
 
 class Ui_NewOrder(object):
-    draw = 0
+    draw = None
     k = 0.15
 
     sizes = [0, 0, 0, 0, 0, 0, 0]
@@ -26,6 +26,7 @@ class Ui_NewOrder(object):
     uplotnitel = 4
     shlegel = 5
     napravlaushaya = 40
+    rigel = 7
 
     def connect_to_db(self):
         from PyQt5.QtSql import QSqlDatabase
@@ -46,7 +47,7 @@ class Ui_NewOrder(object):
         self.size_6.clicked.connect(lambda: self.show_set_size(5))
         self.size_7.clicked.connect(lambda: self.show_set_size(6))
 
-        self.btn_merge.clicked.connect(lambda: self.draw.merge())
+        self.btn_merge.clicked.connect(self.merge)
         self.btn_up_draw.clicked.connect(self.update)
         self.custom_mat.clicked.connect(self.custom_material)
 
@@ -55,7 +56,7 @@ class Ui_NewOrder(object):
         self.btn_grass.clicked.connect(lambda: self.draw_material('Стекло'))
         self.btn_mirror.clicked.connect(lambda: self.draw_material('Зеркало'))
         self.btn_LDSP.clicked.connect(lambda: self.draw_material('ЛДСП'))
-        self.btn_unmerge.clicked.connect(lambda: self.draw.unmerge())
+        self.btn_unmerge.clicked.connect(self.unmerge)
 
     @staticmethod
     def norm_value(value, default=1):
@@ -65,18 +66,29 @@ class Ui_NewOrder(object):
             return int(value)
 
     def custom_material(self):
-        material = self.inp_mat.text()
-        self.draw.custom_mat(material)
+        if self.draw is not None:
+            material = self.inp_mat.text()
+            self.draw.custom_mat(material)
+
+    def merge(self):
+        if self.draw is not None:
+            self.draw.merge()
+
+    def unmerge(self):
+        if self.draw is not None:
+            self.draw.unmerge()
 
     def scale(self, action):
-        if action == 0:
-            self.k += 0.05
-        else:
-            self.k -= 0.05
-        self.draw.update_scale(self.k)
+        if self.draw is not None:
+            if action == 0:
+                self.k += 0.05
+            else:
+                self.k -= 0.05
+            self.draw.update_scale(self.k)
 
     def draw_material(self, material):
-        self.draw.change_materials(material)
+        if self.draw is not None:
+            self.draw.change_materials(material)
 
     def normalize_all_value(self):
         self.doors = self.norm_value(self.inp_door.text())
@@ -90,6 +102,9 @@ class Ui_NewOrder(object):
 
         for i in range(self.doors):
             l, h = self.norm_value(eval(f"self.l{i + 1}.text()")), self.norm_value(eval(f"self.h{i + 1}.text()"))
+            if l == 0 or h == 0:
+                return 1
+
             if self.divide[i] != (h, l):
                 self.divide[i] = (h, l)
                 self.sizes[i] = [[0 for _ in range(h)], [0 for _ in range(l)]]
@@ -97,8 +112,14 @@ class Ui_NewOrder(object):
 
     def show_set_size(self, n):
         from new_order.set_size_window import SetSizeDialog
-        self.normalize_all_value()
+        if self.normalize_all_value() == 1:
+            QMessageBox.warning(NewOrder, "Ошибка", "Деление на 0.")
+            return
+        if n >= self.doors:
+            QMessageBox.warning(NewOrder, "Ошибка", "Двери не существует.")
+            return
         h, l = self.divide[n]
+
         if h > 15 or l > 15:
             QMessageBox.warning(NewOrder, "Ошибка", "Слишком большое значение.")
             return
@@ -113,11 +134,13 @@ class Ui_NewOrder(object):
 
     def update(self):
         from new_order.grawing import Drawing
-        self.normalize_all_value()
-        if self.draw != 0:
+        if self.normalize_all_value() == 1:
+            QMessageBox.warning(NewOrder, "Ошибка", "Деление на 0.")
+            return
+        if self.draw is not None:
             self.verticalGroupBox.layout().removeWidget(self.draw)
         self.draw = Drawing(self.centralwidget, self.height, self.long, self.doors, self.divide, self.sizes, self.k,
-                            self.materials, self.doors_sizes, self.profile, self.uplotnitel, self.shlegel)
+                            self.materials, self.doors_sizes, self.profile, self.uplotnitel, self.shlegel, self.rigel)
         self.verticalGroupBox.layout().addWidget(self.draw)
 
     def setupUi(self, NewOrder):
@@ -942,7 +965,7 @@ class Ui_NewOrder(object):
         self.color.setText(_translate("NewOrder", "Цвет"))
         self.profille.setText(_translate("NewOrder", "Профиль"))
         self.customer.setText(_translate("NewOrder", "Клиент"))
-        self.btn_add_to_db.setText(_translate("NewOrder", "Внести"))
+        self.btn_add_to_db.setText(_translate("NewOrder", "Внести\nв базу"))
         self.door.setText(_translate("NewOrder", "Двери"))
         self.height.setText(_translate("NewOrder", "Высота"))
         self.long_2.setText(_translate("NewOrder", "Ширина"))

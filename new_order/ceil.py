@@ -14,14 +14,17 @@ class Ceil:
         return sizes
 
     @staticmethod
-    def get_sizes(H, L, n, div, d_sizes):
+    def get_sizes(H, L, n, div, d_sizes, profile_h, profile_l, shlegel):
         """
-        :param H: высота проема
-        :param L: длинна проема
+        :param H: высота
+        :param L: длинна
         :param n: количество дверей
         :param div: разделить двери на части
         """
+        H -= profile_h
+        d_sizes = list(map(lambda size: size - profile_l - shlegel * 2, d_sizes))
         sizes = list()
+        x, x1, x2 = 0, 0, 0
         for i in range(n):
             h_div, l_div = div[i]
             # doors
@@ -32,16 +35,15 @@ class Ceil:
                 sizes[i].append([])
                 y = y1
                 y1 += H / h_div
-                if i == 0:
-                    x, x1 = 0, 0
-                else:
-                    x, x1 = x1 + 50, x1 + 50
+                x1 = x2 + 50
+                x = x1
                 for _ in range(l_div):
                     x1 += d_sizes[i] / l_div
                     g = list(map(lambda size: round(size), (x, y, x1, y1)))
                     # elem
                     sizes[i][j].append(g)
                     x = x1
+            x2 = x1
         print(sizes)
         return sizes
 
@@ -77,7 +79,6 @@ class Ceil:
                     door_sizes[i][j][2] = x
 
             x, y = door_sizes[0][0][0], y1
-        print(door_sizes)
         return door_sizes
 
 
