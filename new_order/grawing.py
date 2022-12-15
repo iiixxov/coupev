@@ -21,7 +21,7 @@ class UI_Ceil(QtWidgets.QCheckBox):
         self.update_text()
 
     def update_text(self):
-        h, l = round(self.geometry_[2]), round(self.geometry_[3])
+        h, l = round(self.geometry_[3]), round(self.geometry_[2])
         if self.have_uplotnitel:
             h -= self.uplotnitel
             l -= self.uplotnitel
@@ -62,13 +62,13 @@ class Drawing(QtWidgets.QWidget):
         :param profile: (перехлест, горизонт, Н ЛДСП, L ЛДСП)
         """
         super(Drawing, self).__init__()
-        d_sizes = Ceil.get_doors_sizes(long, doors, d_sizes, profile[0], doors-1)
-        doors_sizes = Ceil.get_sizes(height, long, doors, divide, d_sizes, profile[2], profile[3], shlegel)
+        d_sizes = Ceil.get_doors_sizes(long, doors, d_sizes, profile[0], doors-1, shlegel)
+        doors_sizes = Ceil.get_sizes(height, long, doors, divide, d_sizes, profile[2], profile[3])
         for i in range(doors):
             doors_sizes[i] = Ceil.change_sizes(doors_sizes[i],
                                                divide[i], sizes[i],
                                                height - profile[2] - rigel * (divide[i][0] - 1),
-                                               d_sizes[i] - profile[3] - shlegel * 2 - rigel * (divide[i][1] - 1))
+                                               d_sizes[i] - profile[3] - rigel * (divide[i][1] - 1))
 
         self.ceils = []
         self.rigel = rigel

@@ -1,8 +1,8 @@
 class Ceil:
     @staticmethod
-    def get_doors_sizes(L, n, sizes, perehselt, n_perehlest):
+    def get_doors_sizes(L, n, sizes, perehselt, n_perehlest, shlegel):
         count = 0
-        L += (perehselt * n_perehlest)
+        L += (perehselt * n_perehlest + shlegel * n)
         for i in range(n):
             if sizes[i] != 0:
                 L -= sizes[i]
@@ -14,7 +14,7 @@ class Ceil:
         return sizes
 
     @staticmethod
-    def get_sizes(H, L, n, div, d_sizes, profile_h, profile_l, shlegel):
+    def get_sizes(H, L, n, div, d_sizes, profile_h, profile_l):
         """
         :param H: высота
         :param L: длинна
@@ -22,7 +22,7 @@ class Ceil:
         :param div: разделить двери на части
         """
         H -= profile_h
-        d_sizes = list(map(lambda size: size - profile_l - shlegel * 2, d_sizes))
+        d_sizes = list(map(lambda size: size - profile_l, d_sizes))
         sizes = list()
         x, x1, x2 = 0, 0, 0
         for i in range(n):

@@ -23,7 +23,7 @@ class Ui_NewOrder(object):
     doors_sizes = [0, 0, 0, 0, 0, 0, 0]
     profile = (26, 52, 59, 36)
 
-    uplotnitel = 4
+    uplotnitel = 2
     shlegel = 5
     napravlaushaya = 40
     rigel = 7
