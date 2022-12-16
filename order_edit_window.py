@@ -12,16 +12,10 @@ class OrderEditWindow:
     draw = None
     k = 0.15
 
-    sizes = [0, 0, 0, 0, 0, 0, 0]
-    divide = [0, 0, 0, 0, 0, 0, 0]
-    materials = ['', '', '', '', '', '', '']
-    doors_sizes = [0, 0, 0, 0, 0, 0, 0]
-
-    profile = (26, 52, 59, 36)
-    uplotnitel = 2
-    shlegel = 5
-    napravlaushaya = 40
-    rigel = 7
+    sizes = [None, None, None, None, None, None, None]
+    divide = [None, None, None, None, None, None, None]
+    materials = [None, None, None, None, None, None, None]
+    doors_sizes = [None, None, None, None, None, None, None]
 
     def __init__(self):
         self.app = QtWidgets.QApplication(sys.argv)
@@ -31,7 +25,13 @@ class OrderEditWindow:
         self.ui.setupUi(self.NewOrder)
         self.add_connect()
 
-    def connect_to_db(self):
+        self.ui.inp_profile.setText("Открытый")
+
+    def show_profile(self):
+        pass
+
+    @staticmethod
+    def connect_to_db():
         from PyQt5.QtSql import QSqlDatabase
         con = QSqlDatabase.addDatabase("QSQLITE")
         con.setDatabaseName("contacts.sqlite")
@@ -113,7 +113,7 @@ class OrderEditWindow:
 
     def normalize_all_value(self):
         self.doors = self.norm_value(self.ui.inp_door.text())
-        self.height = self.norm_value(self.ui.inp_height.text()) - self.napravlaushaya
+        self.height = self.norm_value(self.ui.inp_height.text())
         self.long = self.norm_value(self.ui.inp_long.text())
 
         for i, size in enumerate(self.ui.int_door_w.text().split()):
@@ -188,7 +188,7 @@ class OrderEditWindow:
 
         if self.draw is not None:
             self.ui.verticalGroupBox.layout().removeWidget(self.draw)
-        self.draw = Drawing(self.ui.centralwidget, self.height, self.long, self.doors, self.divide, self.sizes, self.k,
+        self.draw = Drawing(self.ui.centralwidget, self.height - napravlaushaya, self.long, self.doors, self.divide, self.sizes, self.k,
                             self.materials, self.doors_sizes, profile, uplotnitel, shlegel, rigel, n_perehlest)
         self.ui.verticalGroupBox.layout().addWidget(self.draw)
 
