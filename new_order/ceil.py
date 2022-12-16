@@ -2,7 +2,7 @@ class Ceil:
     @staticmethod
     def get_doors_sizes(L, n, sizes, perehselt, n_perehlest, shlegel):
         count = 0
-        L += (perehselt * n_perehlest + shlegel * n)
+        L += (perehselt * n_perehlest - shlegel * n)
         for i in range(n):
             if sizes[i] != 0:
                 L -= sizes[i]

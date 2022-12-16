@@ -65,9 +65,9 @@
          <property name="geometry">
           <rect>
            <x>0</x>
-           <y>-200</y>
-           <width>419</width>
-           <height>1198</height>
+           <y>-101</y>
+           <width>398</width>
+           <height>937</height>
           </rect>
          </property>
          <layout class="QGridLayout" name="gridLayout" columnstretch="0,0">
@@ -534,78 +534,6 @@
              <number>2</number>
             </property>
             <item>
-             <widget class="QGroupBox" name="groupBox_13">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="title">
-               <string/>
-              </property>
-              <layout class="QFormLayout" name="formLayout_9">
-               <property name="horizontalSpacing">
-                <number>0</number>
-               </property>
-               <property name="verticalSpacing">
-                <number>0</number>
-               </property>
-               <property name="leftMargin">
-                <number>0</number>
-               </property>
-               <property name="topMargin">
-                <number>0</number>
-               </property>
-               <property name="rightMargin">
-                <number>0</number>
-               </property>
-               <property name="bottomMargin">
-                <number>0</number>
-               </property>
-               <item row="2" column="0">
-                <widget class="QLabel" name="overlay_long">
-                 <property name="text">
-                  <string>Длинна</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="1">
-                <widget class="QLineEdit" name="inp_overlay_long"/>
-               </item>
-               <item row="5" column="1">
-                <widget class="QLineEdit" name="inp_overlay_count"/>
-               </item>
-               <item row="5" column="0">
-                <widget class="QLabel" name="overlay_count">
-                 <property name="text">
-                  <string>Количество</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QRadioButton" name="r_no_overlay">
-                 <property name="text">
-                  <string>Нет
-накладки</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="0">
-                <widget class="QRadioButton" name="r_have_overlay">
-                 <property name="text">
-                  <string>Есть накладка
-для направ.</string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
              <widget class="QGroupBox" name="groupBox_2">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
@@ -687,47 +615,6 @@
                 <widget class="QRadioButton" name="r_1_guide">
                  <property name="text">
                   <string>1 полозн. напрявляющая</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <widget class="QGroupBox" name="groupBox_4">
-              <property name="title">
-               <string/>
-              </property>
-              <layout class="QVBoxLayout" name="verticalLayout_11">
-               <property name="spacing">
-                <number>0</number>
-               </property>
-               <property name="leftMargin">
-                <number>0</number>
-               </property>
-               <property name="topMargin">
-                <number>0</number>
-               </property>
-               <property name="rightMargin">
-                <number>0</number>
-               </property>
-               <property name="bottomMargin">
-                <number>0</number>
-               </property>
-               <item>
-                <widget class="QRadioButton" name="r_black_char">
-                 <property name="text">
-                  <string>Черные надписи на чертеже</string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QRadioButton" name="r_white_char">
-                 <property name="text">
-                  <string>Белые надписи на чертеже</string>
                  </property>
                 </widget>
                </item>
@@ -1051,7 +938,8 @@
             <item row="1" column="0">
              <widget class="QPushButton" name="btn_add_to_db">
               <property name="text">
-               <string>Внести</string>
+               <string>Внести
+в базу</string>
               </property>
              </widget>
             </item>
@@ -1067,7 +955,14 @@
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QSpinBox" name="inp_door"/>
+             <widget class="QSpinBox" name="inp_door">
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <number>7</number>
+              </property>
+             </widget>
             </item>
             <item row="1" column="0">
              <widget class="QLabel" name="height">
@@ -1106,6 +1001,78 @@
           </item>
           <item row="7" column="1">
            <layout class="QVBoxLayout" name="verticalLayout_20">
+            <item>
+             <widget class="QGroupBox" name="groupBox_13">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="title">
+               <string/>
+              </property>
+              <layout class="QFormLayout" name="formLayout_9">
+               <property name="horizontalSpacing">
+                <number>0</number>
+               </property>
+               <property name="verticalSpacing">
+                <number>0</number>
+               </property>
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item row="2" column="0">
+                <widget class="QLabel" name="overlay_long">
+                 <property name="text">
+                  <string>Длинна</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="QLineEdit" name="inp_overlay_long"/>
+               </item>
+               <item row="5" column="1">
+                <widget class="QLineEdit" name="inp_overlay_count"/>
+               </item>
+               <item row="5" column="0">
+                <widget class="QLabel" name="overlay_count">
+                 <property name="text">
+                  <string>Количество</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QRadioButton" name="r_no_overlay">
+                 <property name="text">
+                  <string>Нет
+накладки</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QRadioButton" name="r_have_overlay">
+                 <property name="text">
+                  <string>Есть накладка
+для направ.</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
             <item>
              <widget class="QGroupBox" name="groupBox_14">
               <property name="sizePolicy">
@@ -1151,14 +1118,14 @@
                 </widget>
                </item>
                <item row="6" column="0">
-                <widget class="QLabel" name="inp_overlap_count">
+                <widget class="QLabel" name="colvo">
                  <property name="text">
                   <string>Количетво</string>
                  </property>
                 </widget>
                </item>
                <item row="6" column="1">
-                <widget class="QSpinBox" name="spinBox"/>
+                <widget class="QSpinBox" name="inp_overlap_count"/>
                </item>
                <item row="2" column="0">
                 <widget class="QRadioButton" name="r_standart_overlap">
@@ -1186,229 +1153,25 @@
               </property>
               <layout class="QFormLayout" name="formLayout_7">
                <property name="horizontalSpacing">
-                <number>9</number>
+                <number>0</number>
                </property>
                <property name="verticalSpacing">
-                <number>3</number>
+                <number>0</number>
                </property>
                <property name="leftMargin">
-                <number>9</number>
+                <number>0</number>
                </property>
                <property name="topMargin">
-                <number>9</number>
+                <number>0</number>
                </property>
                <property name="rightMargin">
                 <number>0</number>
                </property>
                <property name="bottomMargin">
-                <number>9</number>
-               </property>
-               <item row="0" column="0">
-                <widget class="QLabel" name="def_tape">
-                 <property name="text">
-                  <string>Пленка защитная</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1">
-                <widget class="QLineEdit" name="inp_deftape"/>
-               </item>
-               <item row="1" column="0">
-                <widget class="QLabel" name="stop_up">
-                 <property name="text">
-                  <string>Стопор для
-верх. трека</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1">
-                <widget class="QLineEdit" name="inp_stop_up"/>
-               </item>
-               <item row="2" column="0">
-                <widget class="QLabel" name="stop_down">
-                 <property name="text">
-                  <string>Стопор для
-нижн. трека</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="1">
-                <widget class="QLineEdit" name="inp_stop_dowm"/>
-               </item>
-               <item row="3" column="0">
-                <widget class="QLabel" name="posicioner">
-                 <property name="text">
-                  <string>Позиционер</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="1">
-                <widget class="QLineEdit" name="inp_posicioner"/>
-               </item>
-               <item row="4" column="0">
-                <widget class="QLabel" name="plug">
-                 <property name="text">
-                  <string>Загрушка</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="1">
-                <widget class="QLineEdit" name="inp_plug"/>
-               </item>
-               <item row="5" column="0">
-                <widget class="QLabel" name="pin_to_door">
-                 <property name="text">
-                  <string>Саморез для
-сборки дверей</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="5" column="1">
-                <widget class="QLineEdit" name="inp_pin_to_dooe"/>
-               </item>
-               <item row="6" column="0">
-                <widget class="QLabel" name="add_shlegel">
-                 <property name="text">
-                  <string>Доб. шлегель</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="6" column="1">
-                <widget class="QLineEdit" name="inp_add_shlegel"/>
-               </item>
-               <item row="7" column="0">
-                <widget class="QLabel" name="add_sealer">
-                 <property name="text">
-                  <string>Доб. уплотнитель</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="7" column="1">
-                <widget class="QLineEdit" name="inp_add_sealer"/>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <widget class="QGroupBox" name="groupBox_12">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="title">
-               <string>Доп. материалы для склад.</string>
-              </property>
-              <layout class="QFormLayout" name="formLayout_8">
-               <property name="horizontalSpacing">
-                <number>9</number>
-               </property>
-               <property name="verticalSpacing">
-                <number>3</number>
-               </property>
-               <property name="leftMargin">
-                <number>9</number>
-               </property>
-               <property name="topMargin">
-                <number>9</number>
-               </property>
-               <property name="rightMargin">
                 <number>0</number>
                </property>
-               <property name="bottomMargin">
-                <number>9</number>
-               </property>
-               <item row="0" column="0">
-                <widget class="QLabel" name="vertical_hand">
-                 <property name="text">
-                  <string>Ручка вертикальная</string>
-                 </property>
-                </widget>
-               </item>
                <item row="0" column="1">
-                <widget class="QLineEdit" name="inp_vertical_hand"/>
-               </item>
-               <item row="1" column="0">
-                <widget class="QLabel" name="rolic_up">
-                 <property name="text">
-                  <string>Ролик верхний петля</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1">
-                <widget class="QLineEdit" name="inp_rolic"/>
-               </item>
-               <item row="2" column="0">
-                <widget class="QLabel" name="plug_under_hand">
-                 <property name="text">
-                  <string>Заглушка под ручку</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="1">
-                <widget class="QLineEdit" name="inp_plug_under_hand"/>
-               </item>
-               <item row="3" column="0">
-                <widget class="QLabel" name="hand_fasteners">
-                 <property name="text">
-                  <string>Крепеж для ручки</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="1">
-                <widget class="QLineEdit" name="inp_hand_fasteners"/>
-               </item>
-               <item row="4" column="0">
-                <widget class="QLabel" name="def_tape_stok">
-                 <property name="text">
-                  <string>Пленка защитная</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="1">
-                <widget class="QLineEdit" name="inp_def_tape_stok"/>
-               </item>
-               <item row="5" column="0">
-                <widget class="QLabel" name="door_loop">
-                 <property name="text">
-                  <string>Петля дверная</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="5" column="1">
-                <widget class="QLineEdit" name="inp_door_loop"/>
-               </item>
-               <item row="6" column="0">
-                <widget class="QLabel" name="loop_4">
-                 <property name="text">
-                  <string>Петля 4-х шарнирная</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="6" column="1">
-                <widget class="QLineEdit" name="inp_loop_4"/>
-               </item>
-               <item row="7" column="0">
-                <widget class="QLabel" name="plug_stok">
-                 <property name="text">
-                  <string>Заглушка</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="7" column="1">
-                <widget class="QLineEdit" name="inp_plug_stok"/>
-               </item>
-               <item row="8" column="0">
-                <widget class="QLabel" name="pin_to_door_stok">
-                 <property name="text">
-                  <string>Саморез для
-сборки дверей</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="8" column="1">
-                <widget class="QLineEdit" name="inp_pin_to_door_stok"/>
+                <widget class="QTextEdit" name="textEdit"/>
                </item>
               </layout>
              </widget>

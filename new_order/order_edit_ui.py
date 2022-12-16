@@ -9,145 +9,12 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtSql import QSqlQuery
-from PyQt5.QtWidgets import QMessageBox
 
 
 class Ui_NewOrder(object):
-    draw = None
-    k = 0.15
-
-    sizes = [0, 0, 0, 0, 0, 0, 0]
-    divide = [0, 0, 0, 0, 0, 0, 0]
-    materials = ['', '', '', '', '', '', '']
-    doors_sizes = [0, 0, 0, 0, 0, 0, 0]
-    profile = (26, 52, 59, 36)
-
-    uplotnitel = 2
-    shlegel = 5
-    napravlaushaya = 40
-    rigel = 7
-
-    def connect_to_db(self):
-        from PyQt5.QtSql import QSqlDatabase
-        con = QSqlDatabase.addDatabase("QSQLITE")
-        con.setDatabaseName("contacts.sqlite")
-        con.open()
-
-        query = QSqlQuery("SELECT id, name FROM customers")
-        while query.next():
-            print(query.value(0), query.value(1))
-
-    def add_connect(self):
-        self.size_1.clicked.connect(lambda: self.show_set_size(0))
-        self.size_2.clicked.connect(lambda: self.show_set_size(1))
-        self.size_3.clicked.connect(lambda: self.show_set_size(2))
-        self.size_4.clicked.connect(lambda: self.show_set_size(3))
-        self.size5.clicked.connect(lambda: self.show_set_size(4))
-        self.size_6.clicked.connect(lambda: self.show_set_size(5))
-        self.size_7.clicked.connect(lambda: self.show_set_size(6))
-
-        self.btn_merge.clicked.connect(self.merge)
-        self.btn_up_draw.clicked.connect(self.update)
-        self.custom_mat.clicked.connect(self.custom_material)
-
-        self.btn_plus.clicked.connect(lambda: self.scale(0))
-        self.btn_nimus.clicked.connect(lambda: self.scale(1))
-        self.btn_grass.clicked.connect(lambda: self.draw_material('Стекло'))
-        self.btn_mirror.clicked.connect(lambda: self.draw_material('Зеркало'))
-        self.btn_LDSP.clicked.connect(lambda: self.draw_material('ЛДСП'))
-        self.btn_unmerge.clicked.connect(self.unmerge)
-
-    @staticmethod
-    def norm_value(value, default=1):
-        if value == '' or not value.isdigit():
-            return default
-        else:
-            return int(value)
-
-    def custom_material(self):
-        if self.draw is not None:
-            material = self.inp_mat.text()
-            self.draw.custom_mat(material)
-
-    def merge(self):
-        if self.draw is not None:
-            self.draw.merge()
-
-    def unmerge(self):
-        if self.draw is not None:
-            self.draw.unmerge()
-
-    def scale(self, action):
-        if self.draw is not None:
-            if action == 0:
-                self.k += 0.05
-            else:
-                self.k -= 0.05
-            self.draw.update_scale(self.k)
-
-    def draw_material(self, material):
-        if self.draw is not None:
-            self.draw.change_materials(material)
-
-    def normalize_all_value(self):
-        self.doors = self.norm_value(self.inp_door.text())
-        self.height = self.norm_value(self.inp_height.text()) - self.napravlaushaya
-        self.long = self.norm_value(self.inp_long.text())
-
-        for i, size in enumerate(self.int_door_w.text().split()):
-            self.doors_sizes[i] = self.norm_value(size, default=0)
-        for i in range(len(self.int_door_w.text().split()), 7):
-            self.doors_sizes[i] = 0
-
-        for i in range(self.doors):
-            l, h = self.norm_value(eval(f"self.l{i + 1}.text()")), self.norm_value(eval(f"self.h{i + 1}.text()"))
-            if l == 0 or h == 0:
-                return 1
-
-            if self.divide[i] != (h, l):
-                self.divide[i] = (h, l)
-                self.sizes[i] = [[0 for _ in range(h)], [0 for _ in range(l)]]
-            self.materials[i] = eval(f"self.mat{i + 1}.currentText()")
-
-    def show_set_size(self, n):
-        from new_order.set_size_window import SetSizeDialog
-        if self.normalize_all_value() == 1:
-            QMessageBox.warning(NewOrder, "Ошибка", "Деление на 0.")
-            return
-        if n >= self.doors:
-            QMessageBox.warning(NewOrder, "Ошибка", "Двери не существует.")
-            return
-        h, l = self.divide[n]
-
-        if h > 15 or l > 15:
-            QMessageBox.warning(NewOrder, "Ошибка", "Слишком большое значение.")
-            return
-        set_size_dialog = SetSizeDialog(self.sizes[n], h, l)
-        size = set_size_dialog.size
-        if type(size) == list:
-            if 0 not in size[0] or 0 not in size[1] or sum(size[0]) >= self.long or sum(
-                    size[1]) >= self.height // self.doors:
-                QMessageBox.warning(NewOrder, "Ошибка", "Недопустимые значения.")
-            else:
-                self.sizes[n] = size
-
-    def update(self):
-        from new_order.grawing import Drawing
-        if self.normalize_all_value() == 1:
-            QMessageBox.warning(NewOrder, "Ошибка", "Деление на 0.")
-            return
-        if self.draw is not None:
-            self.verticalGroupBox.layout().removeWidget(self.draw)
-        self.draw = Drawing(self.centralwidget, self.height, self.long, self.doors, self.divide, self.sizes, self.k,
-                            self.materials, self.doors_sizes, self.profile, self.uplotnitel, self.shlegel, self.rigel)
-        self.verticalGroupBox.layout().addWidget(self.draw)
-
     def setupUi(self, NewOrder):
-        # self.connect_to_db()
-
         NewOrder.setObjectName("NewOrder")
-        NewOrder.resize(1000, 800)
+        NewOrder.resize(787, 686)
         self.centralwidget = QtWidgets.QWidget(NewOrder)
         self.centralwidget.setObjectName("centralwidget")
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.centralwidget)
@@ -176,7 +43,7 @@ class Ui_NewOrder(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents_2 = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, -200, 419, 1198))
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, -101, 398, 937))
         self.scrollAreaWidgetContents_2.setObjectName("scrollAreaWidgetContents_2")
         self.gridLayout = QtWidgets.QGridLayout(self.scrollAreaWidgetContents_2)
         self.gridLayout.setObjectName("gridLayout")
@@ -411,38 +278,6 @@ class Ui_NewOrder(object):
         self.verticalLayout_18 = QtWidgets.QVBoxLayout()
         self.verticalLayout_18.setSpacing(2)
         self.verticalLayout_18.setObjectName("verticalLayout_18")
-        self.groupBox_13 = QtWidgets.QGroupBox(self.scrollAreaWidgetContents_2)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.groupBox_13.sizePolicy().hasHeightForWidth())
-        self.groupBox_13.setSizePolicy(sizePolicy)
-        self.groupBox_13.setTitle("")
-        self.groupBox_13.setObjectName("groupBox_13")
-        self.formLayout_9 = QtWidgets.QFormLayout(self.groupBox_13)
-        self.formLayout_9.setContentsMargins(0, 0, 0, 0)
-        self.formLayout_9.setSpacing(0)
-        self.formLayout_9.setObjectName("formLayout_9")
-        self.overlay_long = QtWidgets.QLabel(self.groupBox_13)
-        self.overlay_long.setObjectName("overlay_long")
-        self.formLayout_9.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.overlay_long)
-        self.inp_overlay_long = QtWidgets.QLineEdit(self.groupBox_13)
-        self.inp_overlay_long.setObjectName("inp_overlay_long")
-        self.formLayout_9.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.inp_overlay_long)
-        self.inp_overlay_count = QtWidgets.QLineEdit(self.groupBox_13)
-        self.inp_overlay_count.setObjectName("inp_overlay_count")
-        self.formLayout_9.setWidget(5, QtWidgets.QFormLayout.FieldRole, self.inp_overlay_count)
-        self.overlay_count = QtWidgets.QLabel(self.groupBox_13)
-        self.overlay_count.setObjectName("overlay_count")
-        self.formLayout_9.setWidget(5, QtWidgets.QFormLayout.LabelRole, self.overlay_count)
-        self.r_no_overlay = QtWidgets.QRadioButton(self.groupBox_13)
-        self.r_no_overlay.setObjectName("r_no_overlay")
-        self.formLayout_9.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.r_no_overlay)
-        self.r_have_overlay = QtWidgets.QRadioButton(self.groupBox_13)
-        self.r_have_overlay.setChecked(True)
-        self.r_have_overlay.setObjectName("r_have_overlay")
-        self.formLayout_9.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.r_have_overlay)
-        self.verticalLayout_18.addWidget(self.groupBox_13)
         self.groupBox_2 = QtWidgets.QGroupBox(self.scrollAreaWidgetContents_2)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
@@ -478,21 +313,6 @@ class Ui_NewOrder(object):
         self.r_1_guide.setObjectName("r_1_guide")
         self.verticalLayout_10.addWidget(self.r_1_guide)
         self.verticalLayout_18.addWidget(self.groupBox_3)
-        self.groupBox_4 = QtWidgets.QGroupBox(self.scrollAreaWidgetContents_2)
-        self.groupBox_4.setTitle("")
-        self.groupBox_4.setObjectName("groupBox_4")
-        self.verticalLayout_11 = QtWidgets.QVBoxLayout(self.groupBox_4)
-        self.verticalLayout_11.setContentsMargins(0, 0, 0, 0)
-        self.verticalLayout_11.setSpacing(0)
-        self.verticalLayout_11.setObjectName("verticalLayout_11")
-        self.r_black_char = QtWidgets.QRadioButton(self.groupBox_4)
-        self.r_black_char.setChecked(True)
-        self.r_black_char.setObjectName("r_black_char")
-        self.verticalLayout_11.addWidget(self.r_black_char)
-        self.r_white_char = QtWidgets.QRadioButton(self.groupBox_4)
-        self.r_white_char.setObjectName("r_white_char")
-        self.verticalLayout_11.addWidget(self.r_white_char)
-        self.verticalLayout_18.addWidget(self.groupBox_4)
         self.groupBox_5 = QtWidgets.QGroupBox(self.scrollAreaWidgetContents_2)
         self.groupBox_5.setTitle("")
         self.groupBox_5.setObjectName("groupBox_5")
@@ -671,6 +491,38 @@ class Ui_NewOrder(object):
         self.gridLayout.addWidget(self.list_profile, 3, 1, 1, 1)
         self.verticalLayout_20 = QtWidgets.QVBoxLayout()
         self.verticalLayout_20.setObjectName("verticalLayout_20")
+        self.groupBox_13 = QtWidgets.QGroupBox(self.scrollAreaWidgetContents_2)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.groupBox_13.sizePolicy().hasHeightForWidth())
+        self.groupBox_13.setSizePolicy(sizePolicy)
+        self.groupBox_13.setTitle("")
+        self.groupBox_13.setObjectName("groupBox_13")
+        self.formLayout_9 = QtWidgets.QFormLayout(self.groupBox_13)
+        self.formLayout_9.setContentsMargins(0, 0, 0, 0)
+        self.formLayout_9.setSpacing(0)
+        self.formLayout_9.setObjectName("formLayout_9")
+        self.overlay_long = QtWidgets.QLabel(self.groupBox_13)
+        self.overlay_long.setObjectName("overlay_long")
+        self.formLayout_9.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.overlay_long)
+        self.inp_overlay_long = QtWidgets.QLineEdit(self.groupBox_13)
+        self.inp_overlay_long.setObjectName("inp_overlay_long")
+        self.formLayout_9.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.inp_overlay_long)
+        self.inp_overlay_count = QtWidgets.QLineEdit(self.groupBox_13)
+        self.inp_overlay_count.setObjectName("inp_overlay_count")
+        self.formLayout_9.setWidget(5, QtWidgets.QFormLayout.FieldRole, self.inp_overlay_count)
+        self.overlay_count = QtWidgets.QLabel(self.groupBox_13)
+        self.overlay_count.setObjectName("overlay_count")
+        self.formLayout_9.setWidget(5, QtWidgets.QFormLayout.LabelRole, self.overlay_count)
+        self.r_no_overlay = QtWidgets.QRadioButton(self.groupBox_13)
+        self.r_no_overlay.setObjectName("r_no_overlay")
+        self.formLayout_9.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.r_no_overlay)
+        self.r_have_overlay = QtWidgets.QRadioButton(self.groupBox_13)
+        self.r_have_overlay.setChecked(True)
+        self.r_have_overlay.setObjectName("r_have_overlay")
+        self.formLayout_9.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.r_have_overlay)
+        self.verticalLayout_20.addWidget(self.groupBox_13)
         self.groupBox_14 = QtWidgets.QGroupBox(self.scrollAreaWidgetContents_2)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
@@ -689,12 +541,12 @@ class Ui_NewOrder(object):
         self.r_no_overlap = QtWidgets.QRadioButton(self.groupBox_14)
         self.r_no_overlap.setObjectName("r_no_overlap")
         self.formLayout_10.setWidget(5, QtWidgets.QFormLayout.SpanningRole, self.r_no_overlap)
-        self.inp_overlap_count = QtWidgets.QLabel(self.groupBox_14)
+        self.colvo = QtWidgets.QLabel(self.groupBox_14)
+        self.colvo.setObjectName("colvo")
+        self.formLayout_10.setWidget(6, QtWidgets.QFormLayout.LabelRole, self.colvo)
+        self.inp_overlap_count = QtWidgets.QSpinBox(self.groupBox_14)
         self.inp_overlap_count.setObjectName("inp_overlap_count")
-        self.formLayout_10.setWidget(6, QtWidgets.QFormLayout.LabelRole, self.inp_overlap_count)
-        self.spinBox = QtWidgets.QSpinBox(self.groupBox_14)
-        self.spinBox.setObjectName("spinBox")
-        self.formLayout_10.setWidget(6, QtWidgets.QFormLayout.FieldRole, self.spinBox)
+        self.formLayout_10.setWidget(6, QtWidgets.QFormLayout.FieldRole, self.inp_overlap_count)
         self.r_standart_overlap = QtWidgets.QRadioButton(self.groupBox_14)
         self.r_standart_overlap.setChecked(True)
         self.r_standart_overlap.setObjectName("r_standart_overlap")
@@ -708,126 +560,13 @@ class Ui_NewOrder(object):
         self.groupBox_11.setSizePolicy(sizePolicy)
         self.groupBox_11.setObjectName("groupBox_11")
         self.formLayout_7 = QtWidgets.QFormLayout(self.groupBox_11)
-        self.formLayout_7.setContentsMargins(9, 9, 0, 9)
-        self.formLayout_7.setHorizontalSpacing(9)
-        self.formLayout_7.setVerticalSpacing(3)
+        self.formLayout_7.setContentsMargins(0, 0, 0, 0)
+        self.formLayout_7.setSpacing(0)
         self.formLayout_7.setObjectName("formLayout_7")
-        self.def_tape = QtWidgets.QLabel(self.groupBox_11)
-        self.def_tape.setObjectName("def_tape")
-        self.formLayout_7.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.def_tape)
-        self.inp_deftape = QtWidgets.QLineEdit(self.groupBox_11)
-        self.inp_deftape.setObjectName("inp_deftape")
-        self.formLayout_7.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.inp_deftape)
-        self.stop_up = QtWidgets.QLabel(self.groupBox_11)
-        self.stop_up.setObjectName("stop_up")
-        self.formLayout_7.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.stop_up)
-        self.inp_stop_up = QtWidgets.QLineEdit(self.groupBox_11)
-        self.inp_stop_up.setObjectName("inp_stop_up")
-        self.formLayout_7.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.inp_stop_up)
-        self.stop_down = QtWidgets.QLabel(self.groupBox_11)
-        self.stop_down.setObjectName("stop_down")
-        self.formLayout_7.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.stop_down)
-        self.inp_stop_dowm = QtWidgets.QLineEdit(self.groupBox_11)
-        self.inp_stop_dowm.setObjectName("inp_stop_dowm")
-        self.formLayout_7.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.inp_stop_dowm)
-        self.posicioner = QtWidgets.QLabel(self.groupBox_11)
-        self.posicioner.setObjectName("posicioner")
-        self.formLayout_7.setWidget(3, QtWidgets.QFormLayout.LabelRole, self.posicioner)
-        self.inp_posicioner = QtWidgets.QLineEdit(self.groupBox_11)
-        self.inp_posicioner.setObjectName("inp_posicioner")
-        self.formLayout_7.setWidget(3, QtWidgets.QFormLayout.FieldRole, self.inp_posicioner)
-        self.plug = QtWidgets.QLabel(self.groupBox_11)
-        self.plug.setObjectName("plug")
-        self.formLayout_7.setWidget(4, QtWidgets.QFormLayout.LabelRole, self.plug)
-        self.inp_plug = QtWidgets.QLineEdit(self.groupBox_11)
-        self.inp_plug.setObjectName("inp_plug")
-        self.formLayout_7.setWidget(4, QtWidgets.QFormLayout.FieldRole, self.inp_plug)
-        self.pin_to_door = QtWidgets.QLabel(self.groupBox_11)
-        self.pin_to_door.setObjectName("pin_to_door")
-        self.formLayout_7.setWidget(5, QtWidgets.QFormLayout.LabelRole, self.pin_to_door)
-        self.inp_pin_to_dooe = QtWidgets.QLineEdit(self.groupBox_11)
-        self.inp_pin_to_dooe.setObjectName("inp_pin_to_dooe")
-        self.formLayout_7.setWidget(5, QtWidgets.QFormLayout.FieldRole, self.inp_pin_to_dooe)
-        self.add_shlegel = QtWidgets.QLabel(self.groupBox_11)
-        self.add_shlegel.setObjectName("add_shlegel")
-        self.formLayout_7.setWidget(6, QtWidgets.QFormLayout.LabelRole, self.add_shlegel)
-        self.inp_add_shlegel = QtWidgets.QLineEdit(self.groupBox_11)
-        self.inp_add_shlegel.setObjectName("inp_add_shlegel")
-        self.formLayout_7.setWidget(6, QtWidgets.QFormLayout.FieldRole, self.inp_add_shlegel)
-        self.add_sealer = QtWidgets.QLabel(self.groupBox_11)
-        self.add_sealer.setObjectName("add_sealer")
-        self.formLayout_7.setWidget(7, QtWidgets.QFormLayout.LabelRole, self.add_sealer)
-        self.inp_add_sealer = QtWidgets.QLineEdit(self.groupBox_11)
-        self.inp_add_sealer.setObjectName("inp_add_sealer")
-        self.formLayout_7.setWidget(7, QtWidgets.QFormLayout.FieldRole, self.inp_add_sealer)
+        self.textEdit = QtWidgets.QTextEdit(self.groupBox_11)
+        self.textEdit.setObjectName("textEdit")
+        self.formLayout_7.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.textEdit)
         self.verticalLayout_20.addWidget(self.groupBox_11)
-        self.groupBox_12 = QtWidgets.QGroupBox(self.scrollAreaWidgetContents_2)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.groupBox_12.sizePolicy().hasHeightForWidth())
-        self.groupBox_12.setSizePolicy(sizePolicy)
-        self.groupBox_12.setObjectName("groupBox_12")
-        self.formLayout_8 = QtWidgets.QFormLayout(self.groupBox_12)
-        self.formLayout_8.setContentsMargins(9, 9, 0, 9)
-        self.formLayout_8.setHorizontalSpacing(9)
-        self.formLayout_8.setVerticalSpacing(3)
-        self.formLayout_8.setObjectName("formLayout_8")
-        self.vertical_hand = QtWidgets.QLabel(self.groupBox_12)
-        self.vertical_hand.setObjectName("vertical_hand")
-        self.formLayout_8.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.vertical_hand)
-        self.inp_vertical_hand = QtWidgets.QLineEdit(self.groupBox_12)
-        self.inp_vertical_hand.setObjectName("inp_vertical_hand")
-        self.formLayout_8.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.inp_vertical_hand)
-        self.rolic_up = QtWidgets.QLabel(self.groupBox_12)
-        self.rolic_up.setObjectName("rolic_up")
-        self.formLayout_8.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.rolic_up)
-        self.inp_rolic = QtWidgets.QLineEdit(self.groupBox_12)
-        self.inp_rolic.setObjectName("inp_rolic")
-        self.formLayout_8.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.inp_rolic)
-        self.plug_under_hand = QtWidgets.QLabel(self.groupBox_12)
-        self.plug_under_hand.setObjectName("plug_under_hand")
-        self.formLayout_8.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.plug_under_hand)
-        self.inp_plug_under_hand = QtWidgets.QLineEdit(self.groupBox_12)
-        self.inp_plug_under_hand.setObjectName("inp_plug_under_hand")
-        self.formLayout_8.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.inp_plug_under_hand)
-        self.hand_fasteners = QtWidgets.QLabel(self.groupBox_12)
-        self.hand_fasteners.setObjectName("hand_fasteners")
-        self.formLayout_8.setWidget(3, QtWidgets.QFormLayout.LabelRole, self.hand_fasteners)
-        self.inp_hand_fasteners = QtWidgets.QLineEdit(self.groupBox_12)
-        self.inp_hand_fasteners.setObjectName("inp_hand_fasteners")
-        self.formLayout_8.setWidget(3, QtWidgets.QFormLayout.FieldRole, self.inp_hand_fasteners)
-        self.def_tape_stok = QtWidgets.QLabel(self.groupBox_12)
-        self.def_tape_stok.setObjectName("def_tape_stok")
-        self.formLayout_8.setWidget(4, QtWidgets.QFormLayout.LabelRole, self.def_tape_stok)
-        self.inp_def_tape_stok = QtWidgets.QLineEdit(self.groupBox_12)
-        self.inp_def_tape_stok.setObjectName("inp_def_tape_stok")
-        self.formLayout_8.setWidget(4, QtWidgets.QFormLayout.FieldRole, self.inp_def_tape_stok)
-        self.door_loop = QtWidgets.QLabel(self.groupBox_12)
-        self.door_loop.setObjectName("door_loop")
-        self.formLayout_8.setWidget(5, QtWidgets.QFormLayout.LabelRole, self.door_loop)
-        self.inp_door_loop = QtWidgets.QLineEdit(self.groupBox_12)
-        self.inp_door_loop.setObjectName("inp_door_loop")
-        self.formLayout_8.setWidget(5, QtWidgets.QFormLayout.FieldRole, self.inp_door_loop)
-        self.loop_4 = QtWidgets.QLabel(self.groupBox_12)
-        self.loop_4.setObjectName("loop_4")
-        self.formLayout_8.setWidget(6, QtWidgets.QFormLayout.LabelRole, self.loop_4)
-        self.inp_loop_4 = QtWidgets.QLineEdit(self.groupBox_12)
-        self.inp_loop_4.setObjectName("inp_loop_4")
-        self.formLayout_8.setWidget(6, QtWidgets.QFormLayout.FieldRole, self.inp_loop_4)
-        self.plug_stok = QtWidgets.QLabel(self.groupBox_12)
-        self.plug_stok.setObjectName("plug_stok")
-        self.formLayout_8.setWidget(7, QtWidgets.QFormLayout.LabelRole, self.plug_stok)
-        self.inp_plug_stok = QtWidgets.QLineEdit(self.groupBox_12)
-        self.inp_plug_stok.setObjectName("inp_plug_stok")
-        self.formLayout_8.setWidget(7, QtWidgets.QFormLayout.FieldRole, self.inp_plug_stok)
-        self.pin_to_door_stok = QtWidgets.QLabel(self.groupBox_12)
-        self.pin_to_door_stok.setObjectName("pin_to_door_stok")
-        self.formLayout_8.setWidget(8, QtWidgets.QFormLayout.LabelRole, self.pin_to_door_stok)
-        self.inp_pin_to_door_stok = QtWidgets.QLineEdit(self.groupBox_12)
-        self.inp_pin_to_door_stok.setObjectName("inp_pin_to_door_stok")
-        self.formLayout_8.setWidget(8, QtWidgets.QFormLayout.FieldRole, self.inp_pin_to_door_stok)
-        self.verticalLayout_20.addWidget(self.groupBox_12)
         self.gridLayout.addLayout(self.verticalLayout_20, 7, 1, 1, 1)
         self.scrollArea.setWidget(self.scrollAreaWidgetContents_2)
         self.config_zone.addWidget(self.scrollArea)
@@ -887,7 +626,6 @@ class Ui_NewOrder(object):
         NewOrder.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(NewOrder)
-        self.add_connect()
         QtCore.QMetaObject.connectSlotsByName(NewOrder)
 
     def retranslateUi(self, NewOrder):
@@ -933,18 +671,10 @@ class Ui_NewOrder(object):
         self.mat7.setItemText(0, _translate("NewOrder", "Стекло"))
         self.mat7.setItemText(1, _translate("NewOrder", "Зеркало"))
         self.mat7.setItemText(2, _translate("NewOrder", "ЛДСП"))
-        self.overlay_long.setText(_translate("NewOrder", "Длинна"))
-        self.overlay_count.setText(_translate("NewOrder", "Количество"))
-        self.r_no_overlay.setText(_translate("NewOrder", "Нет\n"
-"накладки"))
-        self.r_have_overlay.setText(_translate("NewOrder", "Есть накладка\n"
-"для направ."))
         self.r_have_schlegel.setText(_translate("NewOrder", "Считать шлегель"))
         self.r_no_schlegel.setText(_translate("NewOrder", "Шлегель не нужен"))
         self.r_2_guide.setText(_translate("NewOrder", "2-х полозн. напрявляющая"))
         self.r_1_guide.setText(_translate("NewOrder", "1 полозн. напрявляющая"))
-        self.r_black_char.setText(_translate("NewOrder", "Черные надписи на чертеже"))
-        self.r_white_char.setText(_translate("NewOrder", "Белые надписи на чертеже"))
         self.r_no_fraction.setText(_translate("NewOrder", "Отбрасывать дробную часть"))
         self.r_show_fraction.setText(_translate("NewOrder", "Показывать дробную часть"))
         self.r_no_pack.setText(_translate("NewOrder", "Без упаковки (умолчание)"))
@@ -965,38 +695,23 @@ class Ui_NewOrder(object):
         self.color.setText(_translate("NewOrder", "Цвет"))
         self.profille.setText(_translate("NewOrder", "Профиль"))
         self.customer.setText(_translate("NewOrder", "Клиент"))
-        self.btn_add_to_db.setText(_translate("NewOrder", "Внести\nв базу"))
+        self.btn_add_to_db.setText(_translate("NewOrder", "Внести\n"
+"в базу"))
         self.door.setText(_translate("NewOrder", "Двери"))
         self.height.setText(_translate("NewOrder", "Высота"))
         self.long_2.setText(_translate("NewOrder", "Ширина"))
         self.longL2.setText(_translate("NewOrder", "Ширина L2"))
+        self.overlay_long.setText(_translate("NewOrder", "Длинна"))
+        self.overlay_count.setText(_translate("NewOrder", "Количество"))
+        self.r_no_overlay.setText(_translate("NewOrder", "Нет\n"
+"накладки"))
+        self.r_have_overlay.setText(_translate("NewOrder", "Есть накладка\n"
+"для направ."))
         self.r_nostandart_overlap.setText(_translate("NewOrder", "Нестандарт. перехлест"))
         self.r_no_overlap.setText(_translate("NewOrder", "Без перехлест."))
-        self.inp_overlap_count.setText(_translate("NewOrder", "Количетво"))
+        self.colvo.setText(_translate("NewOrder", "Количетво"))
         self.r_standart_overlap.setText(_translate("NewOrder", "Стандарт.  перехлест"))
         self.groupBox_11.setTitle(_translate("NewOrder", "Дополнительные материалы"))
-        self.def_tape.setText(_translate("NewOrder", "Пленка защитная"))
-        self.stop_up.setText(_translate("NewOrder", "Стопор для\n"
-"верх. трека"))
-        self.stop_down.setText(_translate("NewOrder", "Стопор для\n"
-"нижн. трека"))
-        self.posicioner.setText(_translate("NewOrder", "Позиционер"))
-        self.plug.setText(_translate("NewOrder", "Загрушка"))
-        self.pin_to_door.setText(_translate("NewOrder", "Саморез для\n"
-"сборки дверей"))
-        self.add_shlegel.setText(_translate("NewOrder", "Доб. шлегель"))
-        self.add_sealer.setText(_translate("NewOrder", "Доб. уплотнитель"))
-        self.groupBox_12.setTitle(_translate("NewOrder", "Доп. материалы для склад."))
-        self.vertical_hand.setText(_translate("NewOrder", "Ручка вертикальная"))
-        self.rolic_up.setText(_translate("NewOrder", "Ролик верхний петля"))
-        self.plug_under_hand.setText(_translate("NewOrder", "Заглушка под ручку"))
-        self.hand_fasteners.setText(_translate("NewOrder", "Крепеж для ручки"))
-        self.def_tape_stok.setText(_translate("NewOrder", "Пленка защитная"))
-        self.door_loop.setText(_translate("NewOrder", "Петля дверная"))
-        self.loop_4.setText(_translate("NewOrder", "Петля 4-х шарнирная"))
-        self.plug_stok.setText(_translate("NewOrder", "Заглушка"))
-        self.pin_to_door_stok.setText(_translate("NewOrder", "Саморез для\n"
-"сборки дверей"))
         self.verticalGroupBox.setTitle(_translate("NewOrder", "Чертеж"))
         self.btn_plus.setText(_translate("NewOrder", "Масштаб +"))
         self.btn_merge.setText(_translate("NewOrder", "Объеденить"))
