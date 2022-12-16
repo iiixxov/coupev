@@ -2,7 +2,6 @@ import datetime
 import sys
 
 from PyQt5 import QtWidgets, QtCore
-from PyQt5.QtCore import QDate
 from PyQt5.QtSql import QSqlQuery
 from PyQt5.QtWidgets import QMessageBox
 
