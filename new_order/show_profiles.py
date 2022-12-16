@@ -11,26 +11,45 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_Dialog(object):
-    def setupUi(self, Dialog, profiles):
+class ShowPrifileUi(object):
+    def setupUi(self, Dialog, profiles, const):
         Dialog.setObjectName("Dialog")
         Dialog.resize(608, 487)
-        self.horizontalLayout = QtWidgets.QHBoxLayout(Dialog)
+        Dialog.setWindowTitle("Профили")
+        self.horizontalLayout = QtWidgets.QVBoxLayout(Dialog)
         self.horizontalLayout.setObjectName("horizontalLayout")
 
-        self.tableWidget = QtWidgets.QTableView(Dialog)
+        self.tableWidget = QtWidgets.QTableWidget(Dialog)
+        self.tableWidget.setColumnCount(5)
+        self.tableWidget.setRowCount(len(profiles))
+        self.tableWidget.setHorizontalHeaderItem(0, QtWidgets.QTableWidgetItem("Название"))
+        self.tableWidget.setHorizontalHeaderItem(1, QtWidgets.QTableWidgetItem("Перехлест"))
+        self.tableWidget.setHorizontalHeaderItem(2, QtWidgets.QTableWidgetItem("Горизонт"))
+        self.tableWidget.setHorizontalHeaderItem(3, QtWidgets.QTableWidgetItem("Высота"))
+        self.tableWidget.setHorizontalHeaderItem(4, QtWidgets.QTableWidgetItem("Ширина"))
+
+        self.const = QtWidgets.QTableWidget(Dialog)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
+        self.const.setSizePolicy(sizePolicy)
+        self.const.setColumnCount(4)
+        self.const.setRowCount(1)
+        self.const.setHorizontalHeaderItem(0, QtWidgets.QTableWidgetItem("Направляющая"))
+        self.const.setHorizontalHeaderItem(1, QtWidgets.QTableWidgetItem("Уплотнитель"))
+        self.const.setHorizontalHeaderItem(2, QtWidgets.QTableWidgetItem("Ригель"))
+        self.const.setHorizontalHeaderItem(3, QtWidgets.QTableWidgetItem("Шлегель"))
+
+        self.horizontalLayout.addWidget(self.const)
+        self.const.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger(0))
+        self.tableWidget.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger(0))
         self.horizontalLayout.addWidget(self.tableWidget)
 
-        self.tableWidget.set
+        for i, profile in enumerate(profiles):
+            for j, value in enumerate(profile):
+                item = QtWidgets.QTableWidgetItem(str(value))
+                self.tableWidget.setItem(i, j, item)
+
+        for i, value in enumerate(const):
+            item = QtWidgets.QTableWidgetItem(str(value))
+            self.const.setItem(0, i, item)
+
         QtCore.QMetaObject.connectSlotsByName(Dialog)
-
-
-
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    Dialog = QtWidgets.QDialog()
-    ui = Ui_Dialog()
-    ui.setupUi(Dialog, (('открытый', 2, 2, 3), ('close', 0, 0, 4)))
-    Dialog.show()
-    sys.exit(app.exec_())

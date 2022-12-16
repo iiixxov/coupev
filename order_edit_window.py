@@ -1,34 +1,120 @@
-from PyQt5 import QtWidgets
+import datetime
+import sys
+
+from PyQt5 import QtWidgets, QtCore
+from PyQt5.QtCore import QDate
 from PyQt5.QtSql import QSqlQuery
 from PyQt5.QtWidgets import QMessageBox
 
 from new_order.order_edit_ui import Ui_NewOrder
 from new_order.set_size_window import SetSizeDialog
 from new_order.grawing import Drawing
-import sys
+from new_order.show_profiles import ShowPrifileUi
 
 
 class OrderEditWindow:
-    draw = None
-    k = 0.15
-
-    sizes = [None, None, None, None, None, None, None]
-    divide = [None, None, None, None, None, None, None]
-    materials = [None, None, None, None, None, None, None]
-    doors_sizes = [None, None, None, None, None, None, None]
-
     def __init__(self):
+        self.draw = None
+        self.k = 0.15
+        self.sizes = [None, None, None, None, None, None, None]
+        self.divide = [None, None, None, None, None, None, None]
+        self.materials = [None, None, None, None, None, None, None]
+        self.doors_sizes = [None, None, None, None, None, None, None]
+
         self.app = QtWidgets.QApplication(sys.argv)
         self.NewOrder = QtWidgets.QMainWindow()
         self.connect_to_db()
         self.ui = Ui_NewOrder()
         self.ui.setupUi(self.NewOrder)
-        self.add_connect()
 
+        self.add_connect()
+        self.set_date()
+
+        self.ui.splitter.setStretchFactor(1, 5)
+        self.ui.splitter.setStretchFactor(0, 1)
         self.ui.inp_profile.setText("Открытый")
 
-    def show_profile(self):
-        pass
+        self.NewOrder.showMaximized()
+
+    def set_date(self):
+        now = datetime.datetime.now()
+        year, month, day = now.year, now.month, now.day
+        self.ui.inp_date.setDate(QtCore.QDate(QtCore.QDate(year, month, day)))
+        self.ui.inp_date_uot.setDate(QtCore.QDate(QtCore.QDate(year, month, day)))
+
+    def zero(self):
+        self.draw = None
+        self.k = 0.15
+        self.sizes = [None, None, None, None, None, None, None]
+        self.divide = [None, None, None, None, None, None, None]
+        self.materials = [None, None, None, None, None, None, None]
+        self.doors_sizes = [None, None, None, None, None, None, None]
+
+        self.ui.inp_door.setValue(1)
+        self.ui.inp_long.setText('')
+        self.ui.inp_height.setText('')
+        self.ui.inp_longL2.setText('')
+        self.ui.int_door_w.setText('')
+
+        self.ui.l1.setText('')
+        self.ui.h1.setText('')
+        self.ui.l2.setText('')
+        self.ui.h2.setText('')
+        self.ui.l3.setText('')
+        self.ui.h3.setText('')
+        self.ui.l4.setText('')
+        self.ui.h4.setText('')
+        self.ui.l5.setText('')
+        self.ui.h5.setText('')
+        self.ui.l6.setText('')
+        self.ui.h6.setText('')
+        self.ui.l7.setText('')
+        self.ui.h7.setText('')
+
+        self.set_date()
+        self.ui.int_norder.setValue(0)
+        self.ui.inp_discription.setText('')
+        self.ui.inp_color.setText('')
+        self.ui.inp_customer.setText('')
+        self.ui.inp_profile.setText('')
+
+        self.ui.r_have_schlegel.setChecked(True)
+        self.ui.r_2_guide.setChecked(True)
+        self.ui.r_no_fraction.setChecked(True)
+        self.ui.r_mechanismR.setChecked(True)
+        self.ui.r_no_pack.setChecked(True)
+        self.ui.r_no_dilivery.setChecked(True)
+        self.ui.r_build.setChecked(True)
+        self.ui.r_have_overlay.setChecked(True)
+        self.ui.inp_overlay_long.setText('')
+        self.ui.inp_overlay_count.setText('')
+        self.ui.r_standart_overlap.setChecked(True)
+        self.ui.inp_overlap_count.setValue(0)
+        self.ui.inp_dop_mat.setText('')
+
+
+    def add_customer_to_db(self):
+        name = self.ui.inp_customer.text()
+        QSqlQuery().exec(f"INSERT INTO Клиенты (Имя) VALUES ('{name}');")
+        self.get_customers()
+
+    @staticmethod
+    def show_profile():
+        profiles = []
+
+        query = QSqlQuery(f"SELECT * FROM Профили;")
+        while query.next():
+            profiles.append((query.value(1), query.value(0), query.value(2), query.value(3), query.value(4)))
+
+        query = QSqlQuery(f"SELECT * FROM Константы;")
+        query.next()
+        const = (query.value(0), query.value(1), query.value(2), query.value(3))
+
+        Dialog = QtWidgets.QDialog()
+        ui = ShowPrifileUi()
+        ui.setupUi(Dialog, profiles, const)
+        Dialog.show()
+        Dialog.exec()
 
     @staticmethod
     def connect_to_db():
@@ -62,10 +148,12 @@ class OrderEditWindow:
         self.ui.size_6.clicked.connect(lambda: self.show_set_size(5))
         self.ui.size_7.clicked.connect(lambda: self.show_set_size(6))
 
-        self.ui.btn_merge.clicked.connect(self.merge)
+        self.ui.btn_zero.clicked.connect(self.zero)
         self.ui.btn_up_draw.clicked.connect(self.update_drawing)
-        self.ui.custom_mat.clicked.connect(self.custom_material)
+        self.ui.btn_frofiles.clicked.connect(self.show_profile)
 
+        self.ui.btn_merge.clicked.connect(self.merge)
+        self.ui.custom_mat.clicked.connect(self.custom_material)
         self.ui.btn_plus.clicked.connect(lambda: self.scale(0))
         self.ui.btn_nimus.clicked.connect(lambda: self.scale(1))
         self.ui.btn_grass.clicked.connect(lambda: self.draw_material('Стекло'))
@@ -73,6 +161,7 @@ class OrderEditWindow:
         self.ui.btn_LDSP.clicked.connect(lambda: self.draw_material('ЛДСП'))
         self.ui.btn_unmerge.clicked.connect(self.unmerge)
 
+        self.ui.btn_add_to_db.clicked.connect(self.add_customer_to_db)
         self.ui.inp_customer.textChanged.connect(self.get_customers)
         self.ui.list_customers.itemDoubleClicked.connect(lambda item: self.ui.inp_customer.setText(item.text()))
 
@@ -166,7 +255,8 @@ class OrderEditWindow:
 
         query = QSqlQuery(f"SELECT * FROM Профили WHERE Название='{profile_name}'")
         query.next()
-        profile = (query.value(0), query.value(1), query.value(2), query.value(3))
+        profile = (query.value(0), query.value(2), query.value(3), query.value(4))
+        print(profile)
 
         query = QSqlQuery(f"SELECT * FROM Константы;")
         query.next()
