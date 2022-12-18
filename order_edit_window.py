@@ -20,6 +20,7 @@ class OrderEditWindow:
         self.materials = [None, None, None, None, None, None, None]
         self.doors_sizes = [None, None, None, None, None, None, None]
 
+
         self.app = QtWidgets.QApplication(sys.argv)
         self.NewOrder = QtWidgets.QMainWindow()
         self.connect_to_db()
@@ -91,11 +92,55 @@ class OrderEditWindow:
         self.ui.inp_overlap_count.setValue(0)
         self.ui.inp_dop_mat.setText('')
 
-
     def add_customer_to_db(self):
         name = self.ui.inp_customer.text()
         QSqlQuery().exec(f"INSERT INTO Клиенты (Имя) VALUES ('{name}');")
         self.get_customers()
+
+    def save(self):
+        if self.draw is None:
+            if not self.update_drawing():
+                return
+
+        ceils = []
+        for ceil in self.draw.ceils:
+            ceils.append((ceil.geometry_, ceil.material, ceil.pos, ceil.have_uplotnitel))
+
+        if self.ui.r_no_pack.isChecked():
+            pack = 0
+        elif self.ui.r_packin_tape.isChecked():
+            pack = 1
+        elif self.ui.r_packin_corrugation.isChecked():
+            pack = 3
+        else:
+            pack = 4
+
+        if self.ui.r_standart_overlap.isChecked():
+            overlap = -1
+        else:
+            overlap = self.ui.inp_overlap_count.text()
+
+        query = QSqlQuery(f"SELECT FROM Профили id WHERE name={self.ui.inp_profile.text()}")
+        query.next()
+        profile_id = query.value(0)
+
+        query = QSqlQuery(f"SELECT FROM Клиенты id WHERE name={self.ui.inp_customer.text()}")
+        query.next()
+        customer_id = query.value(0)
+
+        QSqlQuery().exec(
+            f""" INSERT INTO Заказы 
+            ("Двери", "Высота", "Ширина", "Ширина Л", "Ширина Д", "Разделители", "Материалы", 
+            "Дата", "Номер", "Дата В", "Описание", "Цвет", 
+            "Шлегель Р", "Направляющая Р", "Упаковка Р", 
+            "Механизм Р", "Доставка Р", "Накладка", "Перехлест", "Дополнительно", "Клиент_id", "Профиль_id", "Размеры") 
+            VALUES 
+            ({self.doors}, {self.height}, {self.long}, {self.ui.inp_longL2.text()}, {self.doors_sizes}, {self.divide}, {self.materials},
+            {self.ui.date.text()}, {self.ui.int_norder.text()}, {self.ui.dateout.text()}, {self.ui.discription.text()}, {self.ui.color.text()}, 
+            {int(self.ui.r_have_schlegel.isChecked())}, {int(self.ui.r_2_guide.isChecked())}, {pack}, 
+            {int(self.ui.r_mechanismR.isChecked())}, {self.ui.r_no_dilivery.isChecked()}, null, {overlap}, {self.ui.inp_dop_mat.toHtml()},
+             {profile_id}, {customer_id}, {ceils}); """
+        )
 
     @staticmethod
     def show_profile():
@@ -103,7 +148,7 @@ class OrderEditWindow:
 
         query = QSqlQuery(f"SELECT * FROM Профили;")
         while query.next():
-            profiles.append((query.value(1), query.value(0), query.value(2), query.value(3), query.value(4)))
+            profiles.append((query.value(2), query.value(1), query.value(3), query.value(4), query.value(5)))
 
         query = QSqlQuery(f"SELECT * FROM Константы;")
         query.next()
@@ -150,6 +195,7 @@ class OrderEditWindow:
         self.ui.btn_zero.clicked.connect(self.zero)
         self.ui.btn_up_draw.clicked.connect(self.update_drawing)
         self.ui.btn_frofiles.clicked.connect(self.show_profile)
+        self.ui.btn_save.clicked.connect(self.save)
 
         self.ui.btn_merge.clicked.connect(self.merge)
         self.ui.custom_mat.clicked.connect(self.custom_material)
@@ -243,14 +289,14 @@ class OrderEditWindow:
     def update_drawing(self):
         if self.normalize_all_value() == 1:
             QMessageBox.warning(self.NewOrder, "Ошибка", "Деление на 0.")
-            return
+            return False
         profile_name = self.ui.inp_profile.text()
 
         query = QSqlQuery(f"SELECT Название FROM Профили WHERE Название='{profile_name}'")
         query.next()
         if query.value(0) is None:
             QMessageBox.warning(self.NewOrder, "Ошибка", "Профиль не найден")
-            return
+            return False
 
         query = QSqlQuery(f"SELECT * FROM Профили WHERE Название='{profile_name}'")
         query.next()
@@ -277,7 +323,8 @@ class OrderEditWindow:
 
         if self.draw is not None:
             self.ui.verticalGroupBox.layout().removeWidget(self.draw)
-        self.draw = Drawing(self.ui.centralwidget, self.height - napravlaushaya, self.long, self.doors, self.divide, self.sizes, self.k,
+        self.draw = Drawing(self.ui.centralwidget, self.height - napravlaushaya, self.long, self.doors, self.divide,
+                            self.sizes, self.k,
                             self.materials, self.doors_sizes, profile, uplotnitel, shlegel, rigel, n_perehlest)
         self.ui.verticalGroupBox.layout().addWidget(self.draw)
 

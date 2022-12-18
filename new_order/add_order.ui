@@ -37,7 +37,7 @@
         <item>
          <layout class="QHBoxLayout" name="UpButtons">
           <item>
-           <widget class="QPushButton" name="btn_update">
+           <widget class="QPushButton" name="btn_save">
             <property name="text">
              <string>Сохранить</string>
             </property>
@@ -82,7 +82,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-305</y>
+             <y>0</y>
              <width>462</width>
              <height>937</height>
             </rect>
