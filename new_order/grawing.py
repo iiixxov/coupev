@@ -57,7 +57,7 @@ class Drawing(QtWidgets.QWidget):
             ceil.k = k
             ceil.update_geometry()
 
-    def __init__(self, form, height, long, doors, divide, sizes, k, materials, d_sizes, profile: tuple, uplotnitel, shlegel, rigel, n_perehlest):
+    def __init__(self, height, long, doors, divide, sizes, k, materials, d_sizes, profile: tuple, uplotnitel, shlegel, rigel, n_perehlest):
         """
         :param profile: (перехлест, горизонт, Н ЛДСП, L ЛДСП)
         """

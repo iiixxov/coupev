@@ -1,18 +1,17 @@
 import datetime
-import sys
 
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtSql import QSqlQuery
 from PyQt5.QtWidgets import QMessageBox
 
-from new_order.order_edit_ui import Ui_NewOrder
+from new_order.order_edit_ui import Ui_edit_order
 from new_order.set_size_window import SetSizeDialog
 from new_order.grawing import Drawing
 from new_order.show_profiles import ShowPrifileUi
 
 
 class OrderEditWindow:
-    def __init__(self):
+    def __init__(self, order_id):
         self.draw = None
         self.k = 0.15
         self.sizes = [None, None, None, None, None, None, None]
@@ -20,12 +19,11 @@ class OrderEditWindow:
         self.materials = [None, None, None, None, None, None, None]
         self.doors_sizes = [None, None, None, None, None, None, None]
 
+        self.order_id = order_id
 
-        self.app = QtWidgets.QApplication(sys.argv)
-        self.NewOrder = QtWidgets.QMainWindow()
-        self.connect_to_db()
-        self.ui = Ui_NewOrder()
-        self.ui.setupUi(self.NewOrder)
+        self.edit_order = QtWidgets.QWidget()
+        self.ui = Ui_edit_order()
+        self.ui.setupUi(self.edit_order)
 
         self.add_connect()
         self.set_date()
@@ -33,8 +31,6 @@ class OrderEditWindow:
         self.ui.splitter.setStretchFactor(1, 5)
         self.ui.splitter.setStretchFactor(0, 1)
         self.ui.inp_profile.setText("Открытый")
-
-        self.NewOrder.showMaximized()
 
     def set_date(self):
         now = datetime.datetime.now()
@@ -98,9 +94,8 @@ class OrderEditWindow:
         self.get_customers()
 
     def save(self):
-        if self.draw is None:
-            if not self.update_drawing():
-                return
+        if self.draw is None and not self.update_drawing():
+            return
 
         ceils = []
         for ceil in self.draw.ceils:
@@ -120,27 +115,43 @@ class OrderEditWindow:
         else:
             overlap = self.ui.inp_overlap_count.text()
 
-        query = QSqlQuery(f"SELECT FROM Профили id WHERE name={self.ui.inp_profile.text()}")
+        query = QSqlQuery(f"SELECT id FROM Профили WHERE Название='{self.ui.inp_profile.text()}'")
         query.next()
         profile_id = query.value(0)
 
-        query = QSqlQuery(f"SELECT FROM Клиенты id WHERE name={self.ui.inp_customer.text()}")
+        query = QSqlQuery(f"SELECT id FROM Клиенты WHERE Имя LIKE '{self.ui.inp_customer.text()}%'")
         query.next()
         customer_id = query.value(0)
 
-        QSqlQuery().exec(
-            f""" INSERT INTO Заказы 
-            ("Двери", "Высота", "Ширина", "Ширина Л", "Ширина Д", "Разделители", "Материалы", 
-            "Дата", "Номер", "Дата В", "Описание", "Цвет", 
-            "Шлегель Р", "Направляющая Р", "Упаковка Р", 
-            "Механизм Р", "Доставка Р", "Накладка", "Перехлест", "Дополнительно", "Клиент_id", "Профиль_id", "Размеры") 
-            VALUES 
-            ({self.doors}, {self.height}, {self.long}, {self.ui.inp_longL2.text()}, {self.doors_sizes}, {self.divide}, {self.materials},
-            {self.ui.date.text()}, {self.ui.int_norder.text()}, {self.ui.dateout.text()}, {self.ui.discription.text()}, {self.ui.color.text()}, 
-            {int(self.ui.r_have_schlegel.isChecked())}, {int(self.ui.r_2_guide.isChecked())}, {pack}, 
-            {int(self.ui.r_mechanismR.isChecked())}, {self.ui.r_no_dilivery.isChecked()}, null, {overlap}, {self.ui.inp_dop_mat.toHtml()},
-             {profile_id}, {customer_id}, {ceils}); """
-        )
+        longL2 = self.norm_value(self.ui.inp_longL2.text())
+
+        print(QSqlQuery().exec(
+            f""" UPDATE Заказы SET
+            "Двери" = {self.doors}, 
+            "Высота" = {self.height}, 
+            "Ширина" = {self.long}, 
+            "Ширина Л" = {longL2}, 
+            "Ширина Д" = "{self.doors_sizes}", 
+            "Разделители" = "{self.divide}", 
+            "Материалы" = "{self.materials}", 
+            "Дата" = "{self.ui.inp_date.text()}", 
+            "Номер" = {self.ui.int_norder.text()}, 
+            "Дата В" = "{self.ui.inp_date_uot.text()}", 
+            "Описание" = "{self.ui.inp_discription.toPlainText()}", 
+            "Цвет" = "{self.ui.color.text()}", 
+            "Шлегель Р" = {int(self.ui.r_have_schlegel.isChecked())}, 
+            "Направляющая Р" = {int(self.ui.r_2_guide.isChecked())}, 
+            "Упаковка Р" = {pack}, 
+            "Механизм Р" = {int(self.ui.r_mechanismR.isChecked())}, 
+            "Доставка Р" = {int(self.ui.r_no_dilivery.isChecked())}, 
+            "Накладка" = null, 
+            "Перехлест" = {overlap}, 
+            "Дополнительно" = "{self.ui.inp_dop_mat.toPlainText()}", 
+            "Клиент_id" = {customer_id},
+            "Профиль_id" = {profile_id},
+            "Размеры" = "{ceils}"
+            WHERE id={self.order_id}; """
+        ))
 
     @staticmethod
     def show_profile():
@@ -250,6 +261,7 @@ class OrderEditWindow:
         self.height = self.norm_value(self.ui.inp_height.text())
         self.long = self.norm_value(self.ui.inp_long.text())
 
+
         for i, size in enumerate(self.ui.int_door_w.text().split()):
             self.doors_sizes[i] = self.norm_value(size, default=0)
         for i in range(len(self.ui.int_door_w.text().split()), 7):
@@ -267,35 +279,42 @@ class OrderEditWindow:
 
     def show_set_size(self, n):
         if self.normalize_all_value() == 1:
-            QMessageBox.warning(self.NewOrder, "Ошибка", "Деление на 0.")
+            QMessageBox.warning(self.edit_order, "Ошибка", "Деление на 0.")
             return
         if n >= self.doors:
-            QMessageBox.warning(self.NewOrder, "Ошибка", "Двери не существует.")
+            QMessageBox.warning(self.edit_order, "Ошибка", "Двери не существует.")
             return
         h, l = self.divide[n]
 
         if h > 15 or l > 15:
-            QMessageBox.warning(self.NewOrder, "Ошибка", "Слишком большое значение.")
+            QMessageBox.warning(self.edit_order, "Ошибка", "Слишком большое значение.")
             return
         set_size_dialog = SetSizeDialog(self.sizes[n], h, l)
         size = set_size_dialog.size
         if type(size) == list:
             if 0 not in size[0] or 0 not in size[1] or sum(size[0]) >= self.long or sum(
                     size[1]) >= self.height // self.doors:
-                QMessageBox.warning(self.NewOrder, "Ошибка", "Недопустимые значения.")
+                QMessageBox.warning(self.edit_order, "Ошибка", "Недопустимые значения.")
             else:
                 self.sizes[n] = size
 
     def update_drawing(self):
         if self.normalize_all_value() == 1:
-            QMessageBox.warning(self.NewOrder, "Ошибка", "Деление на 0.")
+            QMessageBox.warning(self.edit_order, "Ошибка", "Деление на 0.")
             return False
         profile_name = self.ui.inp_profile.text()
+        customer_name = self.ui.inp_customer.text()
 
         query = QSqlQuery(f"SELECT Название FROM Профили WHERE Название='{profile_name}'")
         query.next()
         if query.value(0) is None:
-            QMessageBox.warning(self.NewOrder, "Ошибка", "Профиль не найден")
+            QMessageBox.warning(self.edit_order, "Ошибка", "Профиль не найден")
+            return False
+
+        query = QSqlQuery(f"SELECT Имя FROM Клиенты WHERE Имя='{customer_name}'")
+        query.next()
+        if query.value(0) is None:
+            QMessageBox.warning(self.edit_order, "Ошибка", "Клиент не найден")
             return False
 
         query = QSqlQuery(f"SELECT * FROM Профили WHERE Название='{profile_name}'")
@@ -323,15 +342,8 @@ class OrderEditWindow:
 
         if self.draw is not None:
             self.ui.verticalGroupBox.layout().removeWidget(self.draw)
-        self.draw = Drawing(self.ui.centralwidget, self.height - napravlaushaya, self.long, self.doors, self.divide,
+        self.draw = Drawing(self.height - napravlaushaya, self.long, self.doors, self.divide,
                             self.sizes, self.k,
                             self.materials, self.doors_sizes, profile, uplotnitel, shlegel, rigel, n_perehlest)
         self.ui.verticalGroupBox.layout().addWidget(self.draw)
-
-    def exec(self):
-        self.NewOrder.show()
-        sys.exit(self.app.exec_())
-
-
-if __name__ == "__main__":
-    OrderEditWindow().exec()
+        return True
