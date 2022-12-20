@@ -26,17 +26,77 @@ class OrderEditWindow:
         self.ui.setupUi(self.edit_order)
 
         self.add_connect()
-        self.set_date()
 
         self.ui.splitter.setStretchFactor(1, 5)
         self.ui.splitter.setStretchFactor(0, 1)
-        self.ui.inp_profile.setText("Открытый")
 
-    def set_date(self):
-        now = datetime.datetime.now()
-        year, month, day = now.year, now.month, now.day
-        self.ui.inp_date.setDate(QtCore.QDate(QtCore.QDate(year, month, day)))
-        self.ui.inp_date_uot.setDate(QtCore.QDate(QtCore.QDate(year, month, day)))
+        self.load_from_db()
+
+        self.ui.btn_quit.clicked.connect(lambda: print(self.materials))
+
+    def load_from_db(self):
+        query = QSqlQuery(f"""SELECT * FROM Заказы WHERE id={self.order_id}""")
+        query.next()
+        val = query.value
+
+        self.sizes = eval(val('Размеры'))
+
+        self.ui.inp_door.setValue(val('Двери'))
+        self.ui.inp_height.setText(str(val('Высота')))
+        self.ui.inp_long.setText(str(val('Ширина')))
+        self.ui.inp_longL2.setText(val('Ширина Л'))
+        self.ui.int_door_w.setText(val('Ширина Д'))
+
+        self.materials = eval(f"{val('Материалы')}")
+        for i in range(7):
+            if self.materials[i] is not None:
+                mat = ['Стекло', 'Зеркало', 'ЛДСП']
+                exec(f"self.ui.mat{i+1}.setCurrentIndex({mat.index(self.materials[i])})")
+
+        self.divide = eval(f"{val('Разделители')}")
+        for i, div in enumerate(self.divide):
+            if div is not None:
+                exec(f"self.ui.l{i + 1}.setText(str({div[1]}))")
+                exec(f"self.ui.h{i + 1}.setText(str({div[0]}))")
+
+        day, month, year = (int(e) for e in val('Дата').split('.'))
+        self.ui.inp_date.setDate(QtCore.QDate(year, month, day))
+        self.ui.int_norder.setValue(val('Номер'))
+        day, month, year = (int(e) for e in val('Дата В').split('.'))
+        self.ui.inp_date_uot.setDate(QtCore.QDate(year, month, day))
+        self.ui.inp_discription.setText(val('Описание'))
+        self.ui.inp_color.setText(val('Цвет'))
+
+        customer_query = QSqlQuery(f"SELECT Имя FROM Клиенты WHERE id={query.value('Клиент_id')}")
+        customer_query.next()
+        self.ui.inp_customer.setText(customer_query.value(0))
+
+        profile_query = QSqlQuery(f"SELECT Название FROM Профили WHERE id={query.value('Профиль_id')}")
+        profile_query.next()
+        self.ui.inp_profile.setText(profile_query.value(0))
+
+        if not val('Шлегель Р'):
+            self.ui.r_no_schlegel.setChecked(True)
+        if not val('Направляющая Р'):
+            self.ui.r_1_guide.setChecked(True)
+        if val('Упаковка Р') == 1:
+            self.ui.r_packin_tape.setChecked(True)
+        elif val('Упаковка Р') == 2:
+            self.ui.r_packin_corrugation.setChecked(True)
+        elif val('Упаковка Р') == 3:
+            self.ui.r_packin_box.setChecked(True)
+        if not val('Механизм Р'):
+            self.ui.r_mechanismUFK.setChecked(True)
+        if not val('Доставка'):
+            self.ui.radioButton_3r_dilivery.setChecked(True)
+        if val('Сборка') == 1:
+            self.ui.r_cut.setChecked(True)
+        elif val('Сборка') == 2:
+            self.ui.r_cutandrill.setChecked(True)
+        if val('Перехлест') >= 0:
+            self.ui.r_nostandart_overlap.setChecked(True)
+            self.ui.inp_overlap_count.setValue(val('Перехлест'))
+        self.ui.inp_dop_mat.setText(val('Дополнительно'))
 
     def zero(self):
         self.draw = None
@@ -67,7 +127,6 @@ class OrderEditWindow:
         self.ui.l7.setText('')
         self.ui.h7.setText('')
 
-        self.set_date()
         self.ui.int_norder.setValue(0)
         self.ui.inp_discription.setText('')
         self.ui.inp_color.setText('')
@@ -123,19 +182,17 @@ class OrderEditWindow:
         query.next()
         customer_id = query.value(0)
 
-        longL2 = self.norm_value(self.ui.inp_longL2.text())
-
         print(QSqlQuery().exec(
             f""" UPDATE Заказы SET
-            "Двери" = {self.doors}, 
-            "Высота" = {self.height}, 
-            "Ширина" = {self.long}, 
-            "Ширина Л" = {longL2}, 
-            "Ширина Д" = "{self.doors_sizes}", 
+            "Двери" = "{self.doors}", 
+            "Высота" = "{self.ui.inp_height.text()}", 
+            "Ширина" = "{self.ui.inp_long.text()}", 
+            "Ширина Л" = "{self.ui.inp_longL2.text()}", 
+            "Ширина Д" = "{self.ui.int_door_w.text()}", 
             "Разделители" = "{self.divide}", 
             "Материалы" = "{self.materials}", 
             "Дата" = "{self.ui.inp_date.text()}", 
-            "Номер" = {self.ui.int_norder.text()}, 
+            "Номер" = {self.ui.int_norder.value()}, 
             "Дата В" = "{self.ui.inp_date_uot.text()}", 
             "Описание" = "{self.ui.inp_discription.toPlainText()}", 
             "Цвет" = "{self.ui.color.text()}", 
@@ -149,7 +206,8 @@ class OrderEditWindow:
             "Дополнительно" = "{self.ui.inp_dop_mat.toPlainText()}", 
             "Клиент_id" = {customer_id},
             "Профиль_id" = {profile_id},
-            "Размеры" = "{ceils}"
+            "Размеры" = "{self.sizes}",
+            "Чертеж" = "{ceils}"
             WHERE id={self.order_id}; """
         ))
 
@@ -170,13 +228,6 @@ class OrderEditWindow:
         ui.setupUi(Dialog, profiles, const)
         Dialog.show()
         Dialog.exec()
-
-    @staticmethod
-    def connect_to_db():
-        from PyQt5.QtSql import QSqlDatabase
-        con = QSqlDatabase.addDatabase("QSQLITE")
-        con.setDatabaseName("contacts.sqlite")
-        con.open()
 
     def get_customers(self):
         self.ui.list_customers.clear()
@@ -319,8 +370,7 @@ class OrderEditWindow:
 
         query = QSqlQuery(f"SELECT * FROM Профили WHERE Название='{profile_name}'")
         query.next()
-        profile = (query.value(0), query.value(2), query.value(3), query.value(4))
-        print(profile)
+        profile = (query.value(1), query.value(3), query.value(4), query.value(5))
 
         query = QSqlQuery(f"SELECT * FROM Константы;")
         query.next()

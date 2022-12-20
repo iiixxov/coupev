@@ -24,7 +24,23 @@ class MainWindow:
     def update_table(self):
         self.ui.listWidget.clear()
 
-        query = QSqlQuery(f"SELECT id, Дата, Клиент_id, Описание, Номер, Профиль_id FROM Заказы ORDER BY id DESC LIMIT 100;")
+        if self.ui.lineEdit.text() != '':
+            if self.ui.comboBox.currentText() == 'По номеру':
+                search_mask = f"WHERE Номер LIKE '{self.ui.lineEdit.text()}%'"
+            else:
+                query = QSqlQuery(f"SELECT id FROM Клиенты WHERE Имя LIKE '{self.ui.lineEdit.text()}%'")
+                query.next()
+                search_mask = f"WHERE Клиент_id='{query.value(0)}'"
+        else:
+            search_mask = ''
+
+        if self.ui.comboBox_2.currentText() == 'По возрастанию':
+            sort_mask = 'DESC'
+        else:
+            sort_mask = 'ASC'
+
+        query = QSqlQuery(f"SELECT id, Дата, Клиент_id, Описание, Номер, Профиль_id "
+                          f"FROM Заказы {search_mask} ORDER BY  id {sort_mask} LIMIT 100;")
         while query.next():
             id = query.value(0)
             date = query.value(1)
@@ -40,7 +56,7 @@ class MainWindow:
             profile_query.next()
             profile_id = profile_query.value(0)
 
-            item = QtWidgets.QListWidgetItem(f"{date} {customer_id} ({description}) {doc} {profile_id}")
+            item = QtWidgets.QListWidgetItem(f"{date} {customer_id} ({description}) №{doc} {profile_id}")
             item.id = id
             self.ui.listWidget.addItem(item)
 
@@ -56,12 +72,17 @@ class MainWindow:
         self.ui.btn_form.clicked.connect(self.open_form)
         self.ui.btn_create.clicked.connect(self.create)
 
+        self.ui.tabWidget.tabBarClicked.connect(self.update_table)
+
     def create(self):
         now = datetime.datetime.now()
         date = '.'.join(str(e) for e in (now.day, now.month, now.year))
-        QSqlQuery().exec(
-            f"""INSERT INTO Заказы ("Дата", "Дата В", "Описание") VALUES ('{date}', '{date}', 'Новый заказ');"""
-        )
+        QSqlQuery().exec(f"""
+            INSERT INTO Заказы 
+            ("Дата", "Дата В", "Описание", "Номер") 
+            VALUES 
+            ('{date}', '{date}', 'Новый заказ', 0);
+            """)
         self.update_table()
 
     def exec(self):
@@ -69,7 +90,7 @@ class MainWindow:
             name = ui_login.comboBox.currentText()
             password = ui_login.lineEdit.text()
 
-            query = QSqlQuery(f"SELECT Пароль FROM Пользователи WHERE Имя='{name}';")
+            query = QSqlQuery(f"""SELECT Пароль FROM Пользователи WHERE Имя='{name}';""")
             query.next()
             if password == query.value(0):
                 self.is_logining = True
@@ -89,6 +110,7 @@ class MainWindow:
         login.exec()
 
         if self.is_logining:
+            self.update_table()
             self.main_window.showMaximized()
         else:
             sys.exit()
@@ -96,6 +118,7 @@ class MainWindow:
         sys.exit(self.app.exec_())
 
     def open_form(self):
+        self.ui.tabWidget.removeTab(1)
         item = self.ui.listWidget.selectedItems()
         if not item:
             return

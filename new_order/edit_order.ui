@@ -79,7 +79,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>516</width>
+            <width>505</width>
             <height>937</height>
            </rect>
           </property>
@@ -1001,7 +1001,7 @@
                 </sizepolicy>
                </property>
                <property name="maximum">
-                <number>9999</number>
+                <number>99999</number>
                </property>
               </widget>
              </item>
